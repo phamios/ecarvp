@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.vingroup.ecar.LoginActivity;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
@@ -117,6 +118,11 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
 
+                    if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                        bttSubmit.setText("Điều xe");
+                    }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                        bttSubmit.setText("Hoàn Thành");
+                    }
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
                     final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                     worldlist.clear();
@@ -136,9 +142,9 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                         @Override
                         public void onClick(View v) {
                             new ChangeStatus().execute();
+                            Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                             bookingList.remove(position);
                             notifyDataSetChanged();
-                            Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                             dialog.dismiss();
                         }
                     });
@@ -150,8 +156,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                             Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                         }
                     });
-
-
                     spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         public void onItemSelected(
                                 AdapterView<?> adapterView, View view,
@@ -201,7 +205,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                 jsonRequest.put("SiteId", listSite);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 if(response.trim().equals("null")){
-//                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
+
                 } else {
                     JSONObject reader = new JSONObject(response);
                     Log.i("LISTDRIVER", "response : "+reader.toString());
@@ -257,7 +261,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
         @Override
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
-            String getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+            String getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);

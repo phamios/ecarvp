@@ -97,17 +97,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
         new GetTicket().execute();
-
-//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position,
-//                                    long id) {
-//
-//            }
-//        });
-
-
-
     }
 
     @Override
