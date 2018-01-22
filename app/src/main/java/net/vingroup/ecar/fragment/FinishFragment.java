@@ -45,7 +45,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     private String listSite;
     private int mColor;
-
+    ArrayList<EntityTicket> myBook = new ArrayList<>(0);
     private View mContent;
     private TextView mTextView;
 
@@ -170,27 +170,12 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
                                 String TotalTime = c.getString("TotalTime");
                                 String OverTime = c.getString("OverTime");
                                 String StatusAlert = c.getString("StatusAlert");
-
-                                HashMap<String, String> contact = new HashMap<>();
-                                contact.put("RowNumber", RowNumber);
-                                contact.put("WorlOrderId", WorlOrderId);
-                                contact.put("Title", Title);
-                                contact.put("SiteName", SiteName);
-                                contact.put("Requester", Requester);
-                                contact.put("ServiceName", ServiceName);
-                                contact.put("CategoryName", CategoryName);
-                                contact.put("CreatedTime", CreatedTime);
-                                contact.put("DueByTime", DueByTime);
-                                contact.put("CompletedTime", CompletedTime);
-                                contact.put("ResolvedTime", ResolvedTime);
-                                contact.put("Priority", Priority);
-                                contact.put("StatusName", StatusName);
-                                contact.put("Place", Place);
-                                contact.put("TotalTime", TotalTime);
-                                contact.put("OverTime", OverTime);
-                                contact.put("StatusAlert", StatusAlert);
-
-                                listTicket.add(contact);
+                                String StatusID = c.getString("StatusID");
+                                myBook.add(new EntityTicket(
+                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
+                                ));
                             }
                         }
                     } else {

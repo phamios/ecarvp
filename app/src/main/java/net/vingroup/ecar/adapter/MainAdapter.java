@@ -136,7 +136,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         aa.notifyDataSetChanged();
                         spinnerDriver.setAdapter(aa);
-                        spinnerDriver.setSelection(aa.getPosition(position));
                     } catch(Exception e){
                         Log.i("LISTDRIVER ERROR", e.toString());
                         Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
@@ -162,11 +161,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                         }
                     });
                     spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        public void onItemSelected(
-                                AdapterView<?> adapterView, View view,
-                                int i, long l) {
+                        public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
                             driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
-                            spinnerDriver.setSelection(position);
                             txtselectDriver.setText(driverCurrent);
                         }
 

@@ -124,7 +124,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);
-
         txtWait = (TextView) getActivity().findViewById(R.id.txtTongCho);
         txtOngoing = (TextView) getActivity().findViewById(R.id.txtTongDangdi);
         txtSearchRoom = (EditText)getActivity().findViewById(R.id.txtSearchRoom);
@@ -166,6 +165,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
+
         new GetTicket().execute();
     }
 
@@ -194,6 +194,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected Void doInBackground(Void... arg0) {
+            totalWait = 0;
+            totalInProcess = 0;
             JSONObject jsonRequest = new JSONObject();
             String registerUrl = Constant.APIURL + Constant.APIGETTICKET;
             Log.e(TAG, "Response from url: " + registerUrl);
