@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ecar</string>
+
+    <string name="menu_home">Chờ điều</string>
+    <string name="menu_dangdon">Đã điều</string>
+    <string name="menu_daxong">Hoàn thành</string>
+
+    <string name="text_home">Home Fragment</string>
+    <string name="text_dangdon">Notifications Fragment</string>
+    <string name="text_daxong">Search Fragment</string>
+
+
+</resources>
