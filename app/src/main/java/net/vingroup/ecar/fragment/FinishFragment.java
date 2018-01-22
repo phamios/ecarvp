@@ -23,6 +23,7 @@ import net.vingroup.ecar.MainActivity;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
+import net.vingroup.ecar.adapter.FinishAdapter;
 import net.vingroup.ecar.entity.EntityTicket;
 
 import org.json.JSONArray;
@@ -86,7 +87,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
             listSite = savedInstanceState.getString(ARG_TEXT);
               mColor = savedInstanceState.getInt(ARG_COLOR);
         }
-
+        myBook.clear();
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_finish);
         mContent.setBackgroundColor(mColor);
@@ -96,7 +97,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                listTicket.clear();
+                myBook.clear();
                 new GetContacts().execute();
                 swipeLayout.setRefreshing(false);
             }
@@ -111,9 +112,11 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onRefresh() {
-
+        myBook.clear();
         new GetContacts().execute();
     }
+
+
 
     /**
      * Async task class to get json by making HTTP call
@@ -217,12 +220,8 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(
-                    getActivity(), listTicket,
-                    R.layout.list_item, new String[]{"WorlOrderId", "Title",
-                    "ServiceName","CategoryName"}, new int[]{R.id.name,
-                    R.id.email, R.id.mobile,R.id.category});
-
+            FinishAdapter adapter = new FinishAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            adapter.setData(myBook);
             lv.setAdapter(adapter);
         }
     }

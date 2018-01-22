@@ -129,6 +129,8 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                     bttSubmit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            bookingList.remove(position);
+                            notifyDataSetChanged();
                             new ChangeStatus().execute();
                             Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                             dialog.dismiss();
@@ -253,7 +255,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusId", "3");
+                jsonRequest.put("StatusName", "Đã hoàn thành".trim());
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 if(response.trim().equals("null")){

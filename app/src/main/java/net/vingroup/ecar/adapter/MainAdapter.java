@@ -112,70 +112,75 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
 
-            holder.frameevent.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
-                    final AppCompatDialog dialog = new AppCompatDialog(getContext());
-                    dialog.setContentView(R.layout.dialog);
-                    dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
-                    Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
-                    final TextView txtselectDriver = (TextView) dialog.findViewById(R.id.txtDriverCurrentSelected);
-                    if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
-                        bttSubmit.setText("Điều xe");
-                    }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
-                        bttSubmit.setText("Hoàn Thành");
+            if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
+
+            } else {
+                holder.frameevent.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
+                        final AppCompatDialog dialog = new AppCompatDialog(getContext());
+                        dialog.setContentView(R.layout.dialog);
+                        dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
+                        Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
+                        final TextView txtselectDriver = (TextView) dialog.findViewById(R.id.txtDriverCurrentSelected);
+                        if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                            bttSubmit.setText("Điều xe");
+                        }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                            bttSubmit.setText("Hoàn Thành");
+                        }
+                        Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
+                        final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
+
+                        worldlist.clear();
+                        new GetDriverAsyncTask().execute();
+                        try{
+                            ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
+                            aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            aa.notifyDataSetChanged();
+                            spinnerDriver.setAdapter(aa);
+                        } catch(Exception e){
+                            Log.i("LISTDRIVER ERROR", e.toString());
+                            Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.show();
+
+                        bttSubmit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                new ChangeStatus().execute();
+                                Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
+                                bookingList.remove(position);
+                                notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        bttHuychuyen.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
+                            }
+                        });
+                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                                driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
+                                txtselectDriver.setText(driverCurrent);
+                            }
+
+                            public void onNothingSelected(
+                                    AdapterView<?> adapterView) {
+
+                            }
+                        });
+
+
                     }
-                    Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-                    final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
 
-                    worldlist.clear();
-                    new GetDriverAsyncTask().execute();
-                    try{
-                        ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
-                        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        aa.notifyDataSetChanged();
-                        spinnerDriver.setAdapter(aa);
-                    } catch(Exception e){
-                        Log.i("LISTDRIVER ERROR", e.toString());
-                        Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
-                    }
-                    dialog.show();
+                });
+            }
 
-                    bttSubmit.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            new ChangeStatus().execute();
-                            Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
-                            bookingList.remove(position);
-                            notifyDataSetChanged();
-                            dialog.dismiss();
-                        }
-                    });
-
-                    bttHuychuyen.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
-                        }
-                    });
-                    spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-                            driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
-                            txtselectDriver.setText(driverCurrent);
-                        }
-
-                        public void onNothingSelected(
-                                AdapterView<?> adapterView) {
-
-                        }
-                    });
-
-
-                }
-
-            });
 
         }
 
