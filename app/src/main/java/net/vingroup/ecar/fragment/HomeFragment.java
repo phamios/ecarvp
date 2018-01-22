@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private TextView mTextView;
 
     private String TAG = HomeFragment.class.getSimpleName();
-
+    SwipeRefreshLayout swipeLayout;
     private ProgressDialog pDialog;
     private ListView lv;
     ArrayList<HashMap<String, String>> listTicket;
@@ -89,8 +89,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
          mContent.setBackgroundColor(mColor);
         myBook.clear();
         lv = (ListView) view.findViewById(R.id.listViewHome);
-        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshHome);
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshHome);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                myBook.clear();
+                new GetTicket().execute();
+                swipeLayout.setRefreshing(false);
+            }
+        });
         swipeLayout.setColorSchemeColors(
                 android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
@@ -166,12 +173,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
                                         ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
                                 ));
-//                                listTicket.add(contact);
                             }
                         }
-//                        TicketAdapter adapter = new TicketAdapter(getActivity(), R.layout.custom_listview, myBook);
-//                        adapter.setData(myBook);
-//                        lv.setAdapter(adapter);
 
                     } else {
                         getActivity().runOnUiThread(new Runnable() {

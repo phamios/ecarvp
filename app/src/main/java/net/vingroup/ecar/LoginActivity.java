@@ -120,7 +120,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                     if(reader.getString("responseMsg").trim().equals("Success")){
                         JSONObject dataRespond  = reader.getJSONObject("data");
                         JSONObject jsonObj = new JSONObject(dataRespond.toString());
-
                         Bundle sendBundle = new Bundle();
                         sendBundle.putInt("UserID",jsonObj.getInt("UserID"));
                         sendBundle.putString("FirstName",jsonObj.getString("FirstName"));

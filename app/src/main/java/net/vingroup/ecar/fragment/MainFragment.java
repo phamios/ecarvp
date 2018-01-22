@@ -11,10 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +67,7 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by dvmin on 1/19/2018.
@@ -77,14 +81,17 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private View mContent;
     private TextView mTextView;
     private String TAG = MainFragment.class.getSimpleName();
-    private int totalInProcess;
-    private int totalWait;
-
+    public int totalInProcess = 0;
+    public int totalWait = 0;
+    TextView txtWait;
+    TextView txtOngoing;
+    SwipeRefreshLayout swipeLayout;
     private ProgressDialog pDialog;
     private ListView lv;
     ArrayList<HashMap<String, String>> listTicket;
     ArrayList<EntityTicket> myBook = new ArrayList<>(0);
-
+    EditText txtSearchRoom;
+    MainAdapter adapter;
     public static Fragment newInstance(String text, int color) {
         Fragment frag = new MainFragment();
         Bundle args = new Bundle();
@@ -117,28 +124,56 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);
+
+        txtWait = (TextView) getActivity().findViewById(R.id.txtTongCho);
+        txtOngoing = (TextView) getActivity().findViewById(R.id.txtTongDangdi);
+        txtSearchRoom = (EditText)getActivity().findViewById(R.id.txtSearchRoom);
+        txtSearchRoom.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+                String text = txtSearchRoom.getText().toString().toLowerCase(Locale.getDefault());
+                adapter.filter(text);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                      int arg3) {
+                // TODO Auto-generated method stub
+            }
+        });
         myBook.clear();
         lv = (ListView) view.findViewById(R.id.listViewMain);
-        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshMain);
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshMain);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                myBook.clear();
+                totalWait = 0;
+                totalInProcess = 0;
+                new GetTicket().execute();
+                swipeLayout.setRefreshing(false);
+            }
+        });
         swipeLayout.setColorSchemeColors(
                 android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
         new GetTicket().execute();
-
-
-        TextView txtWait = (TextView) view.findViewById(R.id.txtTongCho);
-        TextView txtOngoing = (TextView) view.findViewById(R.id.txtTongDangdi);
-        txtWait.setText(totalWait + " yêu cầu");
-        txtOngoing.setText(totalInProcess + " yêu cầu");
-
     }
 
     @Override
     public void onRefresh() {
         myBook.clear();
+        totalWait = 0;
+        totalInProcess = 0;
         new GetTicket().execute();
     }
 
@@ -202,9 +237,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                     Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
                                     ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
                             ));
-                            if(c.getString("StatusID") == "1"){
+                            if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;
-                            } else if(c.getString("StatusID") == "2"){
+                            } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
                                 totalInProcess = totalInProcess + 1;
                             }
                         }
@@ -243,9 +278,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            MainAdapter adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
+            txtWait.setText(totalWait + " yêu cầu");
+            txtOngoing.setText(totalInProcess + " yêu cầu");
         }
     }
 
@@ -255,6 +292,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         outState.putInt(ARG_COLOR, mColor);
         super.onSaveInstanceState(outState);
     }
+
 
 }
 

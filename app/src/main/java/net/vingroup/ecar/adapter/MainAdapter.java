@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by dvmin on 1/19/2018.
@@ -43,6 +44,7 @@ import java.util.List;
 
 public class MainAdapter extends ArrayAdapter<EntityTicket> {
     ArrayList<EntityTicket> bookingList = new ArrayList<EntityTicket>();
+    private ArrayList<EntityTicket> arraylist;
     EntityTicket ticket;
     ArrayList<HashMap<String, String>> listDriver;
     ArrayList<EntityDriver> myDriver = new ArrayList<>(0);
@@ -90,6 +92,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
+
         bttStatus.setTag(position);
 
         if(bookingList.size() != 0 ) {
@@ -117,7 +120,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                     dialog.setContentView(R.layout.dialog);
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
-
+                    final TextView txtselectDriver = (TextView) dialog.findViewById(R.id.txtDriverCurrentSelected);
                     if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                         bttSubmit.setText("Điều xe");
                     }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
@@ -125,13 +128,15 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                     }
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
                     final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
+
                     worldlist.clear();
                     new GetDriverAsyncTask().execute();
                     try{
                         ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
-                        aa.notifyDataSetChanged();
                         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        aa.notifyDataSetChanged();
                         spinnerDriver.setAdapter(aa);
+                        spinnerDriver.setSelection(aa.getPosition(position));
                     } catch(Exception e){
                         Log.i("LISTDRIVER ERROR", e.toString());
                         Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
@@ -161,6 +166,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                                 AdapterView<?> adapterView, View view,
                                 int i, long l) {
                             driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
+                            spinnerDriver.setSelection(position);
+                            txtselectDriver.setText(driverCurrent);
                         }
 
                         public void onNothingSelected(
@@ -303,6 +310,43 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
             super.onPostExecute(result);
         }
     }
+
+    @Override
+    public int getCount() {
+        return bookingList.size();
+    }
+
+    @Override
+    public EntityTicket getItem(int position) {
+        return bookingList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        bookingList.clear();
+        if (charText.length() == 0) {
+            bookingList.addAll(arraylist);
+        }
+        else
+        {
+            for (EntityTicket wp : arraylist)
+            {
+                if (wp.getServiceName().toLowerCase(Locale.getDefault()).contains(charText))
+                {
+                    bookingList.add(wp);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+
 
 }
  

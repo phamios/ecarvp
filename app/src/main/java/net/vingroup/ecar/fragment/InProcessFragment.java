@@ -42,7 +42,7 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
     private TextView mTextView;
     ArrayList<EntityTicket> myBook = new ArrayList<>(0);
     private String TAG = InProcessFragment.class.getSimpleName();
-
+    SwipeRefreshLayout swipeLayout;
     private ProgressDialog pDialog;
     private ListView lv;
     ArrayList<HashMap<String, String>> listTicket;
@@ -85,8 +85,15 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
         mContent.setBackgroundColor(mColor);
 
         lv = (ListView) view.findViewById(R.id.listViewInProcess);
-        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshInProcess);
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshInProcess);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                myBook.clear();
+                new GetContacts().execute();
+                swipeLayout.setRefreshing(false);
+            }
+        });
         swipeLayout.setColorSchemeColors(android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
@@ -97,6 +104,7 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
 
     @Override
     public void onRefresh() {
+        myBook.clear();
         new GetContacts().execute();
     }
 

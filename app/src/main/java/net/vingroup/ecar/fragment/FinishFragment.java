@@ -50,7 +50,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private TextView mTextView;
 
     private String TAG = FinishFragment.class.getSimpleName();
-
+    SwipeRefreshLayout swipeLayout;
     private ProgressDialog pDialog;
     private ListView lv;
     ArrayList<HashMap<String, String>> listTicket;
@@ -92,8 +92,15 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
         mContent.setBackgroundColor(mColor);
 
         lv = (ListView) view.findViewById(R.id.listViewFinish);
-        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshFinish);
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshFinish);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                listTicket.clear();
+                new GetContacts().execute();
+                swipeLayout.setRefreshing(false);
+            }
+        });
         swipeLayout.setColorSchemeColors(android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
