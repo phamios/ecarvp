@@ -1,9 +1,11 @@
 package net.vingroup.ecar;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -28,6 +30,7 @@ import net.vingroup.ecar.entity.EntityLogin;
 import net.vingroup.ecar.fragment.FinishFragment;
 import net.vingroup.ecar.fragment.HomeFragment;
 import net.vingroup.ecar.fragment.InProcessFragment;
+import net.vingroup.ecar.fragment.MainFragment;
 import net.vingroup.ecar.fragment.MenuFragment;
 
 import org.json.JSONArray;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     String OSVersion = null;
 
 
+    @TargetApi(Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         receiveValue = receiveBundle.getString("_sitename");
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+        mBottomNav.setItemIconTintList(null);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -79,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
 
         MenuItem selectedItem;
         if (savedInstanceState != null) {
@@ -115,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_home:
                 frag = HomeFragment.newInstance(receiveValue,getColorFromRes(R.color.color_home));
-
                 break;
             case R.id.menu_dangdon:
                 frag = InProcessFragment.newInstance(receiveValue,getColorFromRes(R.color.color_notifications));
@@ -124,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_daxong:
                 frag = FinishFragment.newInstance(receiveValue,getColorFromRes(R.color.color_search));
                 break;
+            case R.id.menu_main:
+                frag = MainFragment.newInstance(receiveValue,getColorFromRes(R.color.color_home));
         }
 
         // update selected item

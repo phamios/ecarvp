@@ -40,7 +40,7 @@ import java.util.List;
  * Created by dvmin on 1/19/2018.
  */
 
-public class TicketAdapter extends ArrayAdapter<EntityTicket> {
+public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
     ArrayList<EntityTicket> bookingList = new ArrayList<EntityTicket>();
     EntityTicket ticket;
     ArrayList<HashMap<String, String>> listDriver;
@@ -55,7 +55,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
     String driverCurrent = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
 
-    public TicketAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
+    public InProcessAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
         super(context, resource, bookList);
         this.context = context;
         this.resource = resource;
@@ -92,7 +92,15 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
 
 
         if(bookingList.size() != 0 ) {
+            if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
+            }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+            }else if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
+                bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
+            }
             bookingRoom.setText(bookingList.get(position).getPlace() );
+            bookingAddress.setText(bookingList.get(position).getCategoryName());
             bttStatus.setText(bookingList.get(position).getTotalTime());
             dateCreate.setText(bookingList.get(position).getCreatedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
@@ -104,14 +112,13 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                     dialog.setContentView(R.layout.dialog);
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
+                    bttSubmit.setText("Hoàn thành");
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
                     final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
-                    worldlist.clear();
                     new GetDriverAsyncTask().execute();
                     try{
                         ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
                         aa.notifyDataSetChanged();
-                        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerDriver.setAdapter(aa);
                     } catch(Exception e){
                         Log.i("LISTDRIVER ERROR", e.toString());
@@ -246,7 +253,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusId", "2");
+                jsonRequest.put("StatusId", "3");
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 if(response.trim().equals("null")){
@@ -261,8 +268,8 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                     String message = null;
                     for (int i = 0; i < respond.length(); i++) {
                         JSONObject c = respond.getJSONObject(i);
-                         status =  c.getString("status");
-                         message = c.getString("message");
+                        status =  c.getString("status");
+                        message = c.getString("message");
                     }
                     if(status.trim().equals("Success")){
                         Log.d("UPDATESTATUS","Respond: Success");
@@ -287,16 +294,4 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
 
 }
 
-class BookingHolder {
-
-    TextView txtAddress;
-    TextView txtRoom;
-    TextView txtDatecreate;
-    TextView txtDangcho;
-    TextView txtDangdieuxe;
-    TextView txtDaDon;
-    Button bttStatus;
-    RelativeLayout frameevent;
-    TextView txtSiteName;
-}
 

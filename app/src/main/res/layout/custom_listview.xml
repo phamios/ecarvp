@@ -10,79 +10,106 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="18dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingBottom="20px"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="18dp">
+        android:paddingBottom="20px">
 
-    <RelativeLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:gravity="center"
-        android:id="@+id/frameevent"
-        android:layout_alignParentBottom="true" >
-
-        <Button
-            android:id="@+id/bttStatus"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:text="10'"
-            android:textAllCaps="false"
-            android:gravity="center"
-            android:textSize="15dp"
-            android:focusableInTouchMode="false"
-            android:clickable="false"
-            android:focusable="false"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
-
-    </RelativeLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:id="@+id/frameevent2"
-        android:paddingLeft="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
-
-        <TextView
-            android:id="@+id/txtAddress"
-            android:layout_width="150dp"
-            android:layout_height="20dp"
+        <RelativeLayout
+            android:id="@+id/frameevent"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/txtRoom"
-            android:clickable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text="Vị trí: "
-            android:textSize="14dp" />
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/txtRoom"
-            android:layout_width="220dp"
-            android:layout_height="25dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:clickable="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text=""
-            android:textSize="14dp"
-            android:textStyle="bold" />
+            <Button
+                android:id="@+id/bttStatus"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/round_button_chuadieu"
+                android:text="10'"
+                android:textAllCaps="false"
+                android:gravity="center"
+                android:textSize="15dp"
+                android:focusableInTouchMode="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
 
-    </RelativeLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/frameevent2"
+            android:layout_width="247dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="20dp"
+            android:paddingLeft="10dp">
+
+            <TextView
+                android:id="@+id/txtAddress"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="Vị trí: "
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/txtCreateDate"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_above="@+id/txtAddress"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="Date "
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/txtRoom"
+                android:layout_width="220dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text=""
+                android:textSize="14dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/SiteName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/txtRoom"
+                android:text="SiteName" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 </RelativeLayout>

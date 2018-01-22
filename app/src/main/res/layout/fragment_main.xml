@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/fragment_content_main"
+    tools:context="net.vingroup.ecar.fragment.MainFragment">
+
+
+    <RelativeLayout
+        android:id="@+id/my_content"
+        android:paddingTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical" >
+
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeToRefreshMain"
+            android:layout_below="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/listViewMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <GridLayout
+            android:id="@+id/gridLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="165dp"
+            android:layout_marginRight="165dp">
+
+
+        </GridLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/gridLayout"
+            android:paddingTop="1dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/gridLayout2">
+            <EditText
+                android:id="@+id/txtSearchRoom"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textView5"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:inputType="textPersonName"
+                android:text="" />
+
+            <Button
+                android:id="@+id/bttSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_below="@+id/textView5"
+                android:layout_column="2"
+                android:layout_row="1"
+                android:text="Tìm phòng" />
+        </GridLayout>
+
+        <TextView
+            android:id="@+id/txtTongDangdi"
+            android:layout_width="120dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_column="1"
+            android:layout_row="0"
+            android:background="@color/color_dangdi"
+            android:gravity="center"
+            android:text=""
+            android:textSize="17dp" />
+
+        <TextView
+            android:id="@+id/txtTongCho"
+            android:layout_width="120dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:background="@color/color_chuadieu"
+            android:gravity="center"
+            android:text=""
+            android:textSize="17dp" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
+

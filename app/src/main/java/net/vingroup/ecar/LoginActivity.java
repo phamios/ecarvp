@@ -1,5 +1,6 @@
 package net.vingroup.ecar;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -83,16 +84,18 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         ProgressDialog mProgressDialog;
         @Override
         protected void onPostExecute(Void result) {
-//            if (mProgressDialog.isShowing())
-//                mProgressDialog.dismiss();
+            if (pDialog.isShowing())
+                pDialog.dismiss();
         }
 
         @Override
         protected void onPreExecute() {
-//            mProgressDialog = new ProgressDialog(getApplicationContext());
-//            mProgressDialog.setMessage("Please wait...");
-//            mProgressDialog.setCancelable(false);
-//            mProgressDialog.show();
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(LoginActivity.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
         }
 
         @Override
@@ -105,7 +108,12 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                 jsonRequest.put("Domain", current_domain);
                 String response = HttpClient.getInstance().post(getApplicationContext(),registerUrl, jsonRequest.toString());
                 if(response.trim().equals("null")){
-                    Toast.makeText(getApplicationContext(),"Login failed",Toast.LENGTH_SHORT).show();
+                    LoginActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "Sai tên đăng nhập hoặc mật khẩu",  Toast.LENGTH_LONG) .show();
+                        }
+                    });
                 } else {
                     JSONObject reader = new JSONObject(response);
                     Log.i(TAG, "response : "+reader.toString());
@@ -122,7 +130,12 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                         startActivity(i);
                         finish();
                     } else {
-                        Toast.makeText(getApplicationContext(),"Login failed",Toast.LENGTH_SHORT).show();
+                        LoginActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, "Sai tên đăng nhập hoặc mật khẩu",  Toast.LENGTH_LONG) .show();
+                            }
+                        });
                     }
                 }
 

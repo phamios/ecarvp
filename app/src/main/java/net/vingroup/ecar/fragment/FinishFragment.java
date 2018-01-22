@@ -1,5 +1,6 @@
 package net.vingroup.ecar.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -71,6 +72,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
         return inflater.inflate(R.layout.fragment_finish, container, false);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -1,6 +1,38 @@
 package net.vingroup.ecar.fragment;
 
+/**
+ * Created by sonpx1 on 1/22/2018.
+ */
+
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import net.vingroup.ecar.R;
+import net.vingroup.ecar.Util.Constant;
+import net.vingroup.ecar.Util.HttpClient;
+import net.vingroup.ecar.adapter.MainAdapter;
+import net.vingroup.ecar.adapter.TicketAdapter;
+import net.vingroup.ecar.entity.EntityTicket;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +59,7 @@ import net.vingroup.ecar.entity.EntityTicket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,17 +69,16 @@ import java.util.HashMap;
  * Created by dvmin on 1/19/2018.
  */
 
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_TEXT = "arg_text";
     private static final String ARG_COLOR = "arg_color";
-
     private String listSite;
     private int mColor;
-
     private View mContent;
     private TextView mTextView;
-
-    private String TAG = HomeFragment.class.getSimpleName();
+    private String TAG = MainFragment.class.getSimpleName();
+    private int totalInProcess;
+    private int totalWait;
 
     private ProgressDialog pDialog;
     private ListView lv;
@@ -54,7 +86,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     ArrayList<EntityTicket> myBook = new ArrayList<>(0);
 
     public static Fragment newInstance(String text, int color) {
-        Fragment frag = new HomeFragment();
+        Fragment frag = new MainFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TEXT, text);
         args.putInt(ARG_COLOR, color);
@@ -64,32 +96,30 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // retrieve text and color from bundle or savedInstanceState
         listTicket = new ArrayList<>();
         if (savedInstanceState == null) {
             Bundle args = getArguments();
             listSite = args.getString(ARG_TEXT);
-             mColor = args.getInt(ARG_COLOR);
+            mColor = args.getInt(ARG_COLOR);
         } else {
             listSite = savedInstanceState.getString(ARG_TEXT);
-             mColor = savedInstanceState.getInt(ARG_COLOR);
+            mColor = savedInstanceState.getInt(ARG_COLOR);
         }
 
         // initialize views
-         mContent = view.findViewById(R.id.fragment_content_home);
-         mContent.setBackgroundColor(mColor);
+        mContent = view.findViewById(R.id.fragment_content_main);
+        mContent.setBackgroundColor(mColor);
         myBook.clear();
-        lv = (ListView) view.findViewById(R.id.listViewHome);
-        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshHome);
+        lv = (ListView) view.findViewById(R.id.listViewMain);
+        SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshMain);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setColorSchemeColors(
                 android.R.color.holo_green_dark,
@@ -98,15 +128,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_orange_dark);
         new GetTicket().execute();
 
-//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position,
-//                                    long id) {
-//
-//            }
-//        });
 
-
+        TextView txtWait = (TextView) view.findViewById(R.id.txtTongCho);
+        TextView txtOngoing = (TextView) view.findViewById(R.id.txtTongDangdi);
+        txtWait.setText(totalWait + " yêu cầu");
+        txtOngoing.setText(totalInProcess + " yêu cầu");
 
     }
 
@@ -153,37 +179,35 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         JSONArray contacts = reader.getJSONArray("data");
                         for (int i = 0; i < contacts.length(); i++) {
                             JSONObject c = contacts.getJSONObject(i);
-                            if(c.getString("StatusID").equals("1")){
-                                String RowNumber = String.valueOf(c.getInt("RowNumber"));
-                                String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
-                                String Title = c.getString("Title");
-                                String SiteName = c.getString("SiteName");
-                                String Requester = c.getString("Requester");
-                                String ServiceName = c.getString("Requester");
-                                String CategoryName = c.getString("CategoryName");
-                                String CreatedTime = c.getString("CreatedTime");
-                                String DueByTime = c.getString("DueByTime");
-                                String CompletedTime = c.getString("CompletedTime");
-                                String ResolvedTime = c.getString("ResolvedTime");
-                                String Priority = c.getString("Priority");
-                                String StatusName = c.getString("StatusName");
-                                String Place = c.getString("Place");
-                                String TotalTime = c.getString("TotalTime");
-                                String OverTime = c.getString("OverTime");
-                                String StatusAlert = c.getString("StatusAlert");
-                                String StatusID = c.getString("StatusID");
-                                myBook.add(new EntityTicket(
-                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
-                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
-                                ));
-//                                listTicket.add(contact);
+                            String RowNumber = String.valueOf(c.getInt("RowNumber"));
+                            String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
+                            String Title = c.getString("Title");
+                            String SiteName = c.getString("SiteName");
+                            String Requester = c.getString("Requester");
+                            String ServiceName = c.getString("Requester");
+                            String CategoryName = c.getString("CategoryName");
+                            String CreatedTime = c.getString("CreatedTime");
+                            String DueByTime = c.getString("DueByTime");
+                            String CompletedTime = c.getString("CompletedTime");
+                            String ResolvedTime = c.getString("ResolvedTime");
+                            String Priority = c.getString("Priority");
+                            String StatusName = c.getString("StatusName");
+                            String Place = c.getString("Place");
+                            String TotalTime = c.getString("TotalTime");
+                            String OverTime = c.getString("OverTime");
+                            String StatusAlert = c.getString("StatusAlert");
+                            String StatusID = c.getString("StatusID");
+                            myBook.add(new EntityTicket(
+                                    Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                    Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
+                            ));
+                            if(c.getString("StatusID") == "1"){
+                                totalWait = totalWait + 1;
+                            } else if(c.getString("StatusID") == "2"){
+                                totalInProcess = totalInProcess + 1;
                             }
                         }
-//                        TicketAdapter adapter = new TicketAdapter(getActivity(), R.layout.custom_listview, myBook);
-//                        adapter.setData(myBook);
-//                        lv.setAdapter(adapter);
-
                     } else {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -219,10 +243,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            /**
-             * Updating parsed JSON data into ListView
-             * */
-            TicketAdapter adapter = new TicketAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            MainAdapter adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
         }
@@ -236,3 +257,4 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
 }
+

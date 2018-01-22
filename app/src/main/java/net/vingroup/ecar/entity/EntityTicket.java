@@ -24,7 +24,10 @@ public class EntityTicket {
     String OverTime;
     String StatusAlert;
 
-    public EntityTicket(int rowNumber, int worlOrderId, String title, String siteName, String requester, String serviceName, String categoryName, String createdTime, String dueByTime, String completedTime, String resolvedTime, String priority, String statusName, String place, String totalTime, String overTime, String statusAlert) {
+
+    String StatusID;
+
+    public EntityTicket(int rowNumber, int worlOrderId, String title, String siteName, String requester, String serviceName, String categoryName, String createdTime, String dueByTime, String completedTime, String resolvedTime, String priority, String statusName, String place, String totalTime, String overTime, String statusAlert,String StatusID) {
         RowNumber = rowNumber;
         WorlOrderId = worlOrderId;
         Title = title;
@@ -42,6 +45,8 @@ public class EntityTicket {
         TotalTime = totalTime;
         OverTime = overTime;
         StatusAlert = statusAlert;
+        StatusID = StatusID;
+
     }
 
 
@@ -180,4 +185,13 @@ public class EntityTicket {
     public void setStatusAlert(String statusAlert) {
         StatusAlert = statusAlert;
     }
+
+    public String getStatusID() {
+        return StatusID;
+    }
+
+    public void setStatusID(String statusID) {
+        StatusID = statusID;
+    }
+
 }

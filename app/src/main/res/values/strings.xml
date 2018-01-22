@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">ecar</string>
+    <string name="app_name">Điều xe Vinpearl</string>
 
+    <string name="menu_main">Tổng quan</string>
     <string name="menu_home">Chờ điều</string>
     <string name="menu_dangdon">Đã điều</string>
     <string name="menu_daxong">Hoàn thành</string>

@@ -1,5 +1,6 @@
 package net.vingroup.ecar.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
+import net.vingroup.ecar.adapter.InProcessAdapter;
+import net.vingroup.ecar.entity.EntityTicket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,10 +38,9 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
     private String listSite;
     private String mText;
     private int mColor;
-
     private View mContent;
     private TextView mTextView;
-
+    ArrayList<EntityTicket> myBook = new ArrayList<>(0);
     private String TAG = InProcessFragment.class.getSimpleName();
 
     private ProgressDialog pDialog;
@@ -61,6 +63,7 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
         return inflater.inflate(R.layout.fragment_inprocess, container, false);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -153,27 +156,12 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
                                 String TotalTime = c.getString("TotalTime");
                                 String OverTime = c.getString("OverTime");
                                 String StatusAlert = c.getString("StatusAlert");
-
-                                HashMap<String, String> contact = new HashMap<>();
-                                contact.put("RowNumber", RowNumber);
-                                contact.put("WorlOrderId", WorlOrderId);
-                                contact.put("Title", Title);
-                                contact.put("SiteName", SiteName);
-                                contact.put("Requester", Requester);
-                                contact.put("ServiceName", ServiceName);
-                                contact.put("CategoryName", CategoryName);
-                                contact.put("CreatedTime", CreatedTime);
-                                contact.put("DueByTime", DueByTime);
-                                contact.put("CompletedTime", CompletedTime);
-                                contact.put("ResolvedTime", ResolvedTime);
-                                contact.put("Priority", Priority);
-                                contact.put("StatusName", StatusName);
-                                contact.put("Place", Place);
-                                contact.put("TotalTime", TotalTime);
-                                contact.put("OverTime", OverTime);
-                                contact.put("StatusAlert", StatusAlert);
-
-                                listTicket.add(contact);
+                                String StatusID = c.getString("StatusID");
+                                myBook.add(new EntityTicket(
+                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
+                                ));
                             }
                         }
                     } else {
@@ -215,12 +203,8 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(
-                    getActivity(), listTicket,
-                    R.layout.list_item, new String[]{"WorlOrderId", "Title",
-                    "ServiceName","CategoryName"}, new int[]{R.id.name,
-                    R.id.email, R.id.mobile,R.id.category});
-
+            InProcessAdapter adapter = new InProcessAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            adapter.setData(myBook);
             lv.setAdapter(adapter);
         }
     }
