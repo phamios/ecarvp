@@ -3,6 +3,7 @@ package net.vingroup.ecar.adapter;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Entity;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -123,26 +124,56 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                         dialog.setContentView(R.layout.dialog);
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                         Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
-                        final TextView txtselectDriver = (TextView) dialog.findViewById(R.id.txtDriverCurrentSelected);
+
                         if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                             bttSubmit.setText("Điều xe");
                         }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                             bttSubmit.setText("Hoàn Thành");
                         }
                         Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-                        final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
 
+                        final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                         worldlist.clear();
                         new GetDriverAsyncTask().execute();
                         try{
-                            ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
-                            aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            aa.notifyDataSetChanged();
-                            spinnerDriver.setAdapter(aa);
+                            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),R.layout.spinner_item,worldlist){
+                                @Override
+                                public View getDropDownView(int position, View convertView,ViewGroup parent) {
+                                    View view = super.getDropDownView(position, convertView, parent);
+                                    TextView tv = (TextView) view;
+                                    if(position%2 == 1) {
+                                        tv.setBackgroundColor(Color.parseColor("#FFC9A3FF"));
+                                    }
+                                    else {
+                                        tv.setBackgroundColor(Color.parseColor("#FFAF89E5"));
+                                    }
+                                    return view;
+                                }
+                            };
+                            spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+                            spinnerArrayAdapter.notifyDataSetChanged();
+                            spinnerDriver.setAdapter(spinnerArrayAdapter);
+
+
                         } catch(Exception e){
                             Log.i("LISTDRIVER ERROR", e.toString());
                             Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
                         }
+
+                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
+                                driverCurrent = selectedItemText;
+                                Log.d("Selected Driver",": "+ driverCurrent);
+                            }
+
+                            public void onNothingSelected(
+                                    AdapterView<?> adapterView) {
+
+                            }
+                        });
+
+
                         dialog.show();
 
                         bttSubmit.setOnClickListener(new View.OnClickListener() {
@@ -163,17 +194,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                                 Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                             }
                         });
-                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-                                driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
-                                txtselectDriver.setText(driverCurrent);
-                            }
 
-                            public void onNothingSelected(
-                                    AdapterView<?> adapterView) {
-
-                            }
-                        });
 
 
                     }
@@ -186,6 +207,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
 
         return view;
     }
+
+
 
     public void setData(ArrayList<EntityTicket> data)
     {
@@ -227,7 +250,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                             String UserName= c.getString("UserName");
                             String FullName = c.getString("FullName");
                             myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
-                            worldlist.add(UserID + "|" + FullName);
+                            worldlist.add(FullName);
                         }
                     } else {
                         worldlist = null;
@@ -276,11 +299,12 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                 jsonRequest.put("StatusId", currentStatus);
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
+                Log.i("CHANGESTATUS", "POST : "+jsonRequest.toString());
                 if(response.trim().equals("null")){
 //                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
                 } else {
                     JSONObject reader = new JSONObject(response);
-                    Log.i("LISTDRIVER", "response : "+reader.toString());
+                    Log.i("CHANGESTATUS", "response : "+reader.toString());
                     String data = reader.getString("data");
                     JSONObject reader2 = new JSONObject(data);
                     JSONArray respond = reader2.getJSONArray("result");

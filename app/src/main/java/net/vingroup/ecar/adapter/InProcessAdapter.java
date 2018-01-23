@@ -100,7 +100,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
             bookingRoom.setText(bookingList.get(position).getPlace() );
-            bookingAddress.setText(bookingList.get(position).getCategoryName());
+            bookingAddress.setText(bookingList.get(position).getTitle());
             bttStatus.setText(bookingList.get(position).getTotalTime());
             dateCreate.setText(bookingList.get(position).getCreatedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
@@ -150,7 +150,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                         public void onItemSelected(
                                 AdapterView<?> adapterView, View view,
                                 int i, long l) {
-                            driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
+                            driverCurrent = spinnerDriver.getSelectedItem().toString();
                         }
 
                         public void onNothingSelected(
@@ -209,7 +209,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                             String UserName= c.getString("UserName");
                             String FullName = c.getString("FullName");
                             myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
-                            worldlist.add(UserID + "|" + FullName);
+                            worldlist.add(FullName);
                         }
                     } else {
                         worldlist = null;
@@ -255,7 +255,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusName", "Đã hoàn thành".trim());
+                jsonRequest.put("StatusID", "3");
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 if(response.trim().equals("null")){

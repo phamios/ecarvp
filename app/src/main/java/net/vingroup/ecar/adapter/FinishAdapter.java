@@ -99,7 +99,7 @@ public class FinishAdapter extends ArrayAdapter<EntityTicket> {
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
             bookingRoom.setText(bookingList.get(position).getPlace() );
-            bookingAddress.setText(bookingList.get(position).getCategoryName());
+            bookingAddress.setText(bookingList.get(position).getTitle());
             bttStatus.setText(bookingList.get(position).getTotalTime());
             dateCreate.setText("Hoàn thành lúc: " + bookingList.get(position).getCompletedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());

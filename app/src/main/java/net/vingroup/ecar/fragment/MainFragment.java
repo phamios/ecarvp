@@ -76,15 +76,17 @@ import java.util.Locale;
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_TEXT = "arg_text";
     private static final String ARG_COLOR = "arg_color";
+    private static final int ARG_WAIT = 0;
+    private static final int ARG_PROCESS = 0;
     private String listSite;
     private int mColor;
     private View mContent;
     private TextView mTextView;
     private String TAG = MainFragment.class.getSimpleName();
-    public int totalInProcess = 0;
-    public int totalWait = 0;
-    TextView txtWait;
-    TextView txtOngoing;
+    public static int totalInProcess = 0;
+    public static int totalWait = 0;
+    static TextView txtWait;
+    static TextView txtOngoing;
     SwipeRefreshLayout swipeLayout;
     private ProgressDialog pDialog;
     private ListView lv;
@@ -92,11 +94,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     ArrayList<EntityTicket> myBook = new ArrayList<>(0);
     EditText txtSearchRoom;
     MainAdapter adapter;
-    public static Fragment newInstance(String text, int color) {
+    public static Fragment newInstance(int totalWait, int inprocess, String text, int color) {
         Fragment frag = new MainFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TEXT, text);
         args.putInt(ARG_COLOR, color);
+        args.putInt(String.valueOf(ARG_WAIT),totalWait);
+        args.putInt(String.valueOf(ARG_PROCESS),inprocess);
+
         frag.setArguments(args);
         return frag;
     }
@@ -116,6 +121,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             Bundle args = getArguments();
             listSite = args.getString(ARG_TEXT);
             mColor = args.getInt(ARG_COLOR);
+            totalInProcess = args.getInt(String.valueOf(ARG_WAIT));
+            totalWait = args.getInt(String.valueOf(ARG_PROCESS));
         } else {
             listSite = savedInstanceState.getString(ARG_TEXT);
             mColor = savedInstanceState.getInt(ARG_COLOR);

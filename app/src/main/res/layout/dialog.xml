@@ -14,6 +14,7 @@
         android:text="Đã tìm thấy xe, và điều xe cho khách này bây giờ ? "
         android:textColor="@android:color/white"
         android:textSize="15dp"
+        android:focusable="false"
         android:textStyle="bold"/>
 
     <Spinner
@@ -25,16 +26,6 @@
         android:popupBackground="#ffffff"
         android:layout_margin="10dp"/>
 
-
-    <TextView
-        android:id="@+id/txtDriverCurrentSelected"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/color_home"
-        android:text=" "
-        />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -50,6 +41,7 @@
             android:background="@android:color/white"
             android:clickable="true"
             android:text="Điều xe"
+            android:focusable="false"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />
 
@@ -60,6 +52,7 @@
             android:layout_marginLeft="5dp"
             android:background="@android:color/white"
             android:clickable="true"
+            android:focusable="false"
             android:text="Không"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />

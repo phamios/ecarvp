@@ -96,6 +96,8 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
             bttStatus.setText(bookingList.get(position).getTotalTime());
             dateCreate.setText(bookingList.get(position).getCreatedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
+            bookingAddress.setText(bookingList.get(position).getTitle());
+
             holder.frameevent.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -141,7 +143,8 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                         public void onItemSelected(
                                 AdapterView<?> adapterView, View view,
                                 int i, long l) {
-                            driverCurrent = spinnerDriver.getItemAtPosition(i).toString();
+
+                            driverCurrent = spinnerDriver.getSelectedItem().toString();
                         }
 
                         public void onNothingSelected(
@@ -200,7 +203,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                             String UserName= c.getString("UserName");
                             String FullName = c.getString("FullName");
                             myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
-                            worldlist.add(UserID + "|" + FullName);
+                            worldlist.add(FullName);
                         }
                     } else {
                         worldlist = null;

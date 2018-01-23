@@ -2,6 +2,7 @@ package net.vingroup.ecar;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -26,7 +27,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
+import net.vingroup.ecar.adapter.MainAdapter;
 import net.vingroup.ecar.entity.EntityLogin;
+import net.vingroup.ecar.entity.EntityTicket;
 import net.vingroup.ecar.fragment.FinishFragment;
 import net.vingroup.ecar.fragment.HomeFragment;
 import net.vingroup.ecar.fragment.InProcessFragment;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     String DeviceName = null;
     String OSVersion = null;
 
+    int totalWait = 0;
+    int totalInProcess = 0;
 
     @TargetApi(Build.VERSION_CODES.O)
     @Override
@@ -61,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
             TelephonyManager tManager = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 IMEIID = tManager.getDeviceId();
-            } else {
-                IMEIID = null;
+            }  else {
+                IMEIID = tManager.getDeviceId();
             }
         }catch (Exception e){
             Log.d("GET_IMEID: ",e.toString());
@@ -131,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
                 frag = FinishFragment.newInstance(receiveValue,getColorFromRes(R.color.color_search));
                 break;
             case R.id.menu_main:
-                frag = MainFragment.newInstance(receiveValue,getColorFromRes(R.color.color_home));
+                new getTotalTicket().execute();
+                Log.d("LOGSERVICE","test" + totalWait + "-" +totalInProcess);
+                frag = MainFragment.newInstance(totalWait,totalInProcess,receiveValue,getColorFromRes(R.color.color_home));
         }
 
         // update selected item
@@ -212,6 +219,81 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
         }
     }
+
+
+    private class getTotalTicket extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            totalWait = 0;
+            totalInProcess = 0;
+            JSONObject jsonRequest = new JSONObject();
+            String registerUrl = Constant.APIURL + Constant.APIGETTICKET;
+            try {
+                jsonRequest.put("SiteId", receiveValue);
+                String response = HttpClient.getInstance().post(MainActivity.this,registerUrl, jsonRequest.toString());
+                if(response.trim().equals("null")){
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Do not have data !",  Toast.LENGTH_LONG) .show();
+                        }
+                    });
+                } else {
+                    JSONObject reader = new JSONObject(response);
+                    Log.i("CountTicket", "response : "+reader.toString());
+                    if(reader.getString("responseMsg").trim().equals("Success")){
+                        JSONArray contacts = reader.getJSONArray("data");
+                        for (int i = 0; i < contacts.length(); i++) {
+                            JSONObject c = contacts.getJSONObject(i);
+                            if(c.getString("StatusName").trim().equals("Mới tạo")){
+                                totalWait = totalWait + 1;
+                            } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
+                                totalInProcess = totalInProcess + 1;
+                            }
+                        }
+                    } else {
+                       MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Error Data Dump!",  Toast.LENGTH_LONG) .show();
+                            }
+                        });
+                    }
+                }
+
+            } catch (final JSONException e) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText( MainActivity.this,
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+//            txtWait.setText(totalWait + " yêu cầu");
+//            txtOngoing.setText(totalInProcess + " yêu cầu");
+        }
+    }
+
 
 
 
