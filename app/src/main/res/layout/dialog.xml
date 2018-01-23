@@ -52,8 +52,8 @@
             android:layout_marginLeft="5dp"
             android:background="@android:color/white"
             android:clickable="true"
-            android:focusable="false"
             android:text="Không"
+            android:focusable="false"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />
 

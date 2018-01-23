@@ -1,9 +1,10 @@
 package net.vingroup.ecar;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,21 +21,16 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
-import net.vingroup.ecar.adapter.MainAdapter;
-import net.vingroup.ecar.entity.EntityLogin;
-import net.vingroup.ecar.entity.EntityTicket;
 import net.vingroup.ecar.fragment.FinishFragment;
 import net.vingroup.ecar.fragment.HomeFragment;
 import net.vingroup.ecar.fragment.InProcessFragment;
 import net.vingroup.ecar.fragment.MainFragment;
-import net.vingroup.ecar.fragment.MenuFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,35 +40,40 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     private static final String SELECTED_ITEM = "arg_selected_item";
+    private static final int REQUEST_READ_PHONE_STATE = 0;
     private BottomNavigationView mBottomNav;
     private int mSelectedItem;
     private String receiveValue = null;
-
+    private boolean shouldRecreate = false;
     String IMEIID = null;
     String DeviceID = null;
     String DeviceName = null;
     String OSVersion = null;
-
+    String phonenum, IMEI;
     int totalWait = 0;
     int totalInProcess = 0;
 
+    @SuppressLint("HardwareIds")
     @TargetApi(Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try{
-            TelephonyManager tManager = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                IMEIID = tManager.getDeviceId();
-            }  else {
-                IMEIID = tManager.getDeviceId();
-            }
-        }catch (Exception e){
-            Log.d("GET_IMEID: ",e.toString());
-        }
 
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+        } else {
+            TelephonyManager tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            try {
+                IMEIID = tel.getDeviceId().toString();
+            } catch (Exception e) {
+                phonenum = "Error!!";
+                IMEIID = tel.getDeviceId().toString();
+            }
+        }
 
         DeviceName = android.os.Build.MANUFACTURER + android.os.Build.MODEL;
         OSVersion = android.os.Build.MODEL;
@@ -91,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         MenuItem selectedItem;
         if (savedInstanceState != null) {
             mSelectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
@@ -103,6 +103,34 @@ public class MainActivity extends AppCompatActivity {
 
         new InsertDeviceID().execute();
     }
+
+    public void initialUISetup()
+    {
+        new InsertDeviceID().execute();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_PHONE_STATE:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    TelephonyManager tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                    try {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                            IMEIID = tel.getDeviceId().toString();
+                        }
+                    } catch (Exception e) {
+                        phonenum = "Error!!";
+                        IMEIID = tel.getDeviceId().toString();
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+    
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -150,13 +178,16 @@ public class MainActivity extends AppCompatActivity {
             menuItem.setChecked(menuItem.getItemId() == item.getItemId());
         }
 
+
         updateToolbarText(item.getTitle());
 
         if (frag != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, frag, frag.getTag());
-            ft.commit();
+            ft.detach(frag).attach(frag).commit();
         }
+
+
     }
 
     protected void setFragment(Fragment fragment) {
@@ -164,8 +195,6 @@ public class MainActivity extends AppCompatActivity {
         t.replace(R.id.container, fragment);
         t.commit();
     }
-
-
 
     private void updateToolbarText(CharSequence text) {
         ActionBar actionBar = getSupportActionBar();
@@ -177,9 +206,6 @@ public class MainActivity extends AppCompatActivity {
     private int getColorFromRes(@ColorRes int resId) {
         return ContextCompat.getColor(this, resId);
     }
-
-
-
     /**
      * ==============================InsertDeviceID===============================
      */
@@ -201,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 jsonRequest.put("ListSiteID", receiveValue);
                 jsonRequest.put("DeviceName", DeviceName);
                 jsonRequest.put("OsVersion", OSVersion);
-                jsonRequest.put("Description", "Vinpearl eCar Service");
+                jsonRequest.put("Description", "Vinpearl Service");
                 Log.d("INSERT DEVICES","POST: "+ jsonRequest.toString());
                 String response = HttpClient.getInstance().post(getApplication(),getticketurl, jsonRequest.toString());
                 Log.i("INSERT DEVICES", "response : "+response.toString());
@@ -291,6 +317,40 @@ public class MainActivity extends AppCompatActivity {
             // Dismiss the progress dialog
 //            txtWait.setText(totalWait + " yêu cầu");
 //            txtOngoing.setText(totalInProcess + " yêu cầu");
+        }
+    }
+
+
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            shouldRecreate = true;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initialUISetup();
+//        load_checkBox_user(mycheckType,spinnerDriver.getSelectedItem().toString());
+        Log.v("shouldRecreate: ",String.valueOf(shouldRecreate));
+        if (shouldRecreate){
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 

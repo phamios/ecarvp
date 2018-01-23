@@ -1,13 +1,20 @@
 package net.vingroup.ecar;
 
+import android.*;
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,7 +48,10 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     EditText _password = null;
     Spinner spinDomain  ;
     private ProgressDialog pDialog;
-
+    private static final int REQUEST_READ_PHONE_STATE = 0;
+    String IMEIID = null;
+    String DeviceID = null;
+    String phonenum, IMEI;
     private void initialise() {
         _emailText = (EditText)findViewById(R.id.input_email);
         _password = (EditText) findViewById(R.id.input_password);
@@ -54,6 +64,21 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initialise();
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+        } else {
+            TelephonyManager tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            try {
+                IMEIID = tel.getDeviceId().toString();
+            } catch (Exception e) {
+                phonenum = "Error!!";
+                IMEIID = tel.getDeviceId().toString();
+            }
+        }
+
 
         spinDomain.setOnItemSelectedListener(this);
         ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,domain);
@@ -78,6 +103,31 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         }
 
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_PHONE_STATE:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    TelephonyManager tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                    try {
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                            IMEIID = tel.getDeviceId().toString();
+                        }
+                    } catch (Exception e) {
+                        phonenum = "Error!!";
+                        IMEIID = tel.getDeviceId().toString();
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
 
     private class MyAsyncTask extends AsyncTask<Void, Void, Void>
     {

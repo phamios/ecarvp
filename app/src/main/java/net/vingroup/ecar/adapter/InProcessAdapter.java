@@ -114,24 +114,13 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
                     bttSubmit.setText("Hoàn thành");
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-                    final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
-                    new GetDriverAsyncTask().execute();
-                    try{
-                        ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
-                        aa.notifyDataSetChanged();
-                        spinnerDriver.setAdapter(aa);
-                    } catch(Exception e){
-                        Log.i("LISTDRIVER ERROR", e.toString());
-                        Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
-                    }
                     dialog.show();
-
                     bttSubmit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            new ChangeStatus().execute();
                             bookingList.remove(position);
                             notifyDataSetChanged();
-                            new ChangeStatus().execute();
                             Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                             dialog.dismiss();
                         }
@@ -144,28 +133,10 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                             Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                         }
                     });
-
-
-                    spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        public void onItemSelected(
-                                AdapterView<?> adapterView, View view,
-                                int i, long l) {
-                            driverCurrent = spinnerDriver.getSelectedItem().toString();
-                        }
-
-                        public void onNothingSelected(
-                                AdapterView<?> adapterView) {
-
-                        }
-                    });
-
-
                 }
 
             });
-
         }
-
         return view;
     }
 
@@ -176,66 +147,6 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
     }
 
 
-    /**
-     * Get Driver Async Task Automatic
-     */
-    private class GetDriverAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            JSONObject jsonRequest = new JSONObject();
-            String getticketurl = Constant.APIURL + Constant.APIGETDRIVER;
-            Log.e("DRIVERGET", "Response from url: " + getticketurl);
-            try {
-                jsonRequest.put("SiteId", listSite);
-                String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
-                if(response.trim().equals("null")){
-//                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
-                } else {
-                    JSONObject reader = new JSONObject(response);
-                    Log.i("LISTDRIVER", "response : "+reader.toString());
-                    if(reader.getString("responseMsg").trim().equals("Success")){
-                        myDriver.clear();
-                        worldlist.clear();
-                        JSONArray contacts = reader.getJSONArray("data");
-                        for (int i = 0; i < contacts.length(); i++) {
-                            JSONObject c = contacts.getJSONObject(i);
-                            String UserID = String.valueOf(c.getInt("UserID"));
-                            String UserName= c.getString("UserName");
-                            String FullName = c.getString("FullName");
-                            myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
-                            worldlist.add(FullName);
-                        }
-                    } else {
-                        worldlist = null;
-                    }
-                }
-
-            } catch (final JSONException e) {
-                Log.e("ERROR DRIVERLIST", "Json parsing error: " + e.getMessage());
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            try{
-            } catch(Exception e){
-                Log.i("LISTDRIVER ERROR", e.toString());
-                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
 
     /**
@@ -255,7 +166,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusID", "3");
+                jsonRequest.put("StatusName", "Đã hoàn thành");
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 if(response.trim().equals("null")){

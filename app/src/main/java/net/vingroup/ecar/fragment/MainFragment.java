@@ -76,8 +76,8 @@ import java.util.Locale;
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String ARG_TEXT = "arg_text";
     private static final String ARG_COLOR = "arg_color";
-    private static final int ARG_WAIT = 0;
-    private static final int ARG_PROCESS = 0;
+    private static final String ARG_WAIT = "arg_wait";
+    private static final String ARG_PROCESS = "arg_process";
     private String listSite;
     private int mColor;
     private View mContent;
@@ -99,8 +99,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Bundle args = new Bundle();
         args.putString(ARG_TEXT, text);
         args.putInt(ARG_COLOR, color);
-        args.putInt(String.valueOf(ARG_WAIT),totalWait);
-        args.putInt(String.valueOf(ARG_PROCESS),inprocess);
+        args.putInt(ARG_WAIT,totalWait);
+        args.putInt(ARG_PROCESS,inprocess);
 
         frag.setArguments(args);
         return frag;
@@ -121,18 +121,25 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             Bundle args = getArguments();
             listSite = args.getString(ARG_TEXT);
             mColor = args.getInt(ARG_COLOR);
-            totalInProcess = args.getInt(String.valueOf(ARG_WAIT));
-            totalWait = args.getInt(String.valueOf(ARG_PROCESS));
+            totalInProcess = args.getInt(ARG_WAIT);
+            totalWait = args.getInt(ARG_PROCESS);
         } else {
             listSite = savedInstanceState.getString(ARG_TEXT);
             mColor = savedInstanceState.getInt(ARG_COLOR);
         }
+
 
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);
         txtWait = (TextView) getActivity().findViewById(R.id.txtTongCho);
         txtOngoing = (TextView) getActivity().findViewById(R.id.txtTongDangdi);
+
+        txtWait.setText(totalWait + " yêu cầu");
+        txtOngoing.setText(totalInProcess + " yêu cầu");
+
+
+
         txtSearchRoom = (EditText)getActivity().findViewById(R.id.txtSearchRoom);
         txtSearchRoom.addTextChangedListener(new TextWatcher() {
             @Override
@@ -179,8 +186,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
         myBook.clear();
-        totalWait = 0;
-        totalInProcess = 0;
+
         new GetTicket().execute();
     }
 

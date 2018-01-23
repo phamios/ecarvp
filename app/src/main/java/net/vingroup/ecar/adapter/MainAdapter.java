@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.vingroup.ecar.LoginActivity;
+import net.vingroup.ecar.MainActivity;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
@@ -43,7 +44,7 @@ import java.util.Locale;
  * Created by dvmin on 1/19/2018.
  */
 
-public class MainAdapter extends ArrayAdapter<EntityTicket> {
+public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     ArrayList<EntityTicket> bookingList = new ArrayList<EntityTicket>();
     private ArrayList<EntityTicket> arraylist;
     EntityTicket ticket;
@@ -53,12 +54,13 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
     int resource;
     private ProgressDialog pDialog;
     private String listSite;
-    Spinner spinnerDriver;
     private String[] items;
     String workerID = null;
     String driverCurrent = null;
-    int currentStatus = 0;
+    String currentStatus = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
+    Spinner spinnerDriver;
+    int CurrentAPICall = 0;
 
     public MainAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
         super(context, resource, bookList);
@@ -100,10 +102,12 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
             bookingRoom.setText(bookingList.get(position).getPlace() );
             if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
-                currentStatus = 2;
+                currentStatus = "Đang chờ xử lý";
+                CurrentAPICall = 1;
             }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
-                currentStatus = 3;
+                currentStatus = "Đã hoàn thành";
+                CurrentAPICall = 2;
             }else if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
@@ -124,17 +128,18 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                         dialog.setContentView(R.layout.dialog);
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                         Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
-
                         if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                             bttSubmit.setText("Điều xe");
+                            currentStatus = "Đang chờ xử lý";
                         }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                             bttSubmit.setText("Hoàn Thành");
+                            currentStatus = "Đã hoàn thành";
                         }
-                        Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-
-                        final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
-                        worldlist.clear();
                         new GetDriverAsyncTask().execute();
+                        Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
+                        spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
+                        worldlist.clear();
+
                         try{
                             final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),R.layout.spinner_item,worldlist){
                                 @Override
@@ -153,36 +158,34 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
                             spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
                             spinnerArrayAdapter.notifyDataSetChanged();
                             spinnerDriver.setAdapter(spinnerArrayAdapter);
-
-
+                            spinnerDriver.setSelection(1);
                         } catch(Exception e){
                             Log.i("LISTDRIVER ERROR", e.toString());
                             Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
                         }
 
-                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
-                                driverCurrent = selectedItemText;
-                                Log.d("Selected Driver",": "+ driverCurrent);
-                            }
-
-                            public void onNothingSelected(
-                                    AdapterView<?> adapterView) {
-
-                            }
-                        });
-
-
                         dialog.show();
+
+//                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                            @Override
+//                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+//                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
+//                                driverCurrent = spinnerDriver.getSelectedItem().toString();
+//                                Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
+//                                Toast.makeText(getContext(), spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+//                            }
+//                            @Override
+//                            public void onNothingSelected(AdapterView<?> adapterView) {
+//                            }
+//                        });
 
                         bttSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new ChangeStatus().execute();
-                                Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                                 bookingList.remove(position);
                                 notifyDataSetChanged();
+                                new ChangeStatus().execute();
+                                Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                                 dialog.dismiss();
                             }
                         });
@@ -198,7 +201,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
 
 
                     }
-
                 });
             }
 
@@ -207,7 +209,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
 
         return view;
     }
-
 
 
     public void setData(ArrayList<EntityTicket> data)
@@ -230,7 +231,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
         @Override
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
-            String getticketurl = Constant.APIURL + Constant.APIGETDRIVER;
+            String getticketurl = getticketurl = Constant.APIURL + Constant.APIGETDRIVER;
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("SiteId", listSite);
@@ -270,11 +271,11 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            try{
-            } catch(Exception e){
-                Log.i("LISTDRIVER ERROR", e.toString());
-                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
-            }
+//            try{
+//            } catch(Exception e){
+//                Log.i("LISTDRIVER ERROR", e.toString());
+//                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 
@@ -292,11 +293,18 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
         @Override
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
-            String getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
+            String getticketurl = null;
+            if(CurrentAPICall == 1){
+                getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
+            } else if(CurrentAPICall == 2){
+                getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+            }
+            getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusId", currentStatus);
+                jsonRequest.put("StatusName",currentStatus );
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 Log.i("CHANGESTATUS", "POST : "+jsonRequest.toString());
@@ -353,22 +361,22 @@ public class MainAdapter extends ArrayAdapter<EntityTicket> {
 
 
     public void filter(String charText) {
-        charText = charText.toLowerCase(Locale.getDefault());
-        bookingList.clear();
-        if (charText.length() == 0) {
-            bookingList.addAll(arraylist);
-        }
-        else
-        {
-            for (EntityTicket wp : arraylist)
-            {
-                if (wp.getServiceName().toLowerCase(Locale.getDefault()).contains(charText))
-                {
-                    bookingList.add(wp);
-                }
-            }
-        }
-        notifyDataSetChanged();
+//        charText = charText.toLowerCase(Locale.getDefault());
+//         bookingList.clear();
+//        if (charText.length() == 0) {
+//            bookingList.addAll(arraylist);
+//        }
+//        else
+//        {
+//            for (EntityTicket wp : arraylist)
+//            {
+//                if (wp.getServiceName().toLowerCase(Locale.getDefault()).contains(charText))
+//                {
+//                    bookingList.add(wp);
+//                }
+//            }
+//        }
+//        notifyDataSetChanged();
     }
 
 
