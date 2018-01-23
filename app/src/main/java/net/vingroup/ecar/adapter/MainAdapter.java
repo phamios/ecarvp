@@ -2,7 +2,6 @@ package net.vingroup.ecar.adapter;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Entity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -12,18 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.vingroup.ecar.LoginActivity;
-import net.vingroup.ecar.MainActivity;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
@@ -36,9 +30,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.HashMap; 
 
 /**
  * Created by dvmin on 1/19/2018.

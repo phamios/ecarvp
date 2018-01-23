@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -52,12 +53,16 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     String IMEIID = null;
     String DeviceID = null;
     String phonenum, IMEI;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
+
     private void initialise() {
         _emailText = (EditText)findViewById(R.id.input_email);
         _password = (EditText) findViewById(R.id.input_password);
         _loginButton = (Button) findViewById(R.id.btn_login);
         spinDomain = (Spinner) findViewById(R.id.usertype);
     }
+    String sitename = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +141,12 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         protected void onPostExecute(Void result) {
             if (pDialog.isShowing())
                 pDialog.dismiss();
+            sharedPref = getApplicationContext().getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+            editor = sharedPref.edit();
+            editor.putString("_site", sitename);
+            editor.putBoolean("connected", true);
+            editor.commit();
+
         }
 
         @Override
@@ -170,6 +181,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                     if(reader.getString("responseMsg").trim().equals("Success")){
                         JSONObject dataRespond  = reader.getJSONObject("data");
                         JSONObject jsonObj = new JSONObject(dataRespond.toString());
+                        sitename = jsonObj.getString("SiteName");
                         Bundle sendBundle = new Bundle();
                         sendBundle.putInt("UserID",jsonObj.getInt("UserID"));
                         sendBundle.putString("FirstName",jsonObj.getString("FirstName"));
@@ -202,7 +214,15 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
             Log.d(TAG, "json : "+jsonRequest.toString());
             return null;
         }
+
+
+
+
+
     }
+
+
+
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
@@ -279,6 +299,10 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        if(sharedPreferences!= null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
     }
 
     @Override
@@ -286,6 +310,14 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onPause();
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
+        myPrefs.edit().remove("_site");
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
+    }
 
 
 

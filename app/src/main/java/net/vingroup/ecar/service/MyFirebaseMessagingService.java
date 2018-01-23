@@ -1,5 +1,6 @@
 package net.vingroup.ecar.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -38,7 +39,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //This is where you get your click_action
         Log.d(TAG, "Notification Click Action: " + remoteMessage.getNotification().getClickAction());
         //put code here to navigate based on click_action
-
+        Log.e("FCM_MESSAGE", remoteMessage.getData().toString());
         remoteMessage.getNotification().getBody();
         showNotification(remoteMessage.getNotification().getBody());
     }
@@ -59,9 +60,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0 , notificationBuilder.build());
+
+
     }
 
 

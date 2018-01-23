@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -79,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
         OSVersion = android.os.Build.MODEL;
         DeviceID = FirebaseInstanceId.getInstance().getToken();
         Bundle receiveBundle = this.getIntent().getExtras();
-        receiveValue = receiveBundle.getString("_sitename");
+
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
         mBottomNav.setItemIconTintList(null);
@@ -101,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         }
         selectFragment(selectedItem);
 
-        new InsertDeviceID().execute();
     }
 
     public void initialUISetup()
@@ -323,11 +325,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void onDestroy() {
         super.onDestroy();
+//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
+        myPrefs.edit().remove("_site");
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
     }
 
     @Override
     public void finish() {
         super.finish();
+        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear();
+        editor.commit();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override
@@ -343,15 +355,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
         initialUISetup();
-//        load_checkBox_user(mycheckType,spinnerDriver.getSelectedItem().toString());
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+//        startActivity(new Intent(this, MainActivity.class));
         Log.v("shouldRecreate: ",String.valueOf(shouldRecreate));
         if (shouldRecreate){
             startActivity(new Intent(this, MainActivity.class));
         }
+
     }
 
 
