@@ -77,6 +77,7 @@ public class FinishAdapter extends ArrayAdapter<EntityTicket> {
             holder.frameevent = (RelativeLayout) view.findViewById(R.id.rowitemList);
             holder.txtDatecreate = (TextView) view.findViewById(R.id.txtCreateDate);
             holder.txtSiteName = (TextView) view.findViewById(R.id.SiteName);
+            holder.txtDriver = (TextView) view.findViewById(R.id.txtDriver);
             view.setTag(holder);
         }else
         {
@@ -88,6 +89,7 @@ public class FinishAdapter extends ArrayAdapter<EntityTicket> {
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
+        TextView txtDriver  = view.findViewById(R.id.txtDriver);
         bttStatus.setTag(position);
 
         if(bookingList.size() != 0 ) {
@@ -103,7 +105,7 @@ public class FinishAdapter extends ArrayAdapter<EntityTicket> {
             bttStatus.setText(bookingList.get(position).getTotalTime());
             dateCreate.setText("Hoàn thành lúc: " + bookingList.get(position).getCompletedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
-
+            txtDriver.setText(bookingList.get(position).getTechnicianName());
         }
 
         return view;
