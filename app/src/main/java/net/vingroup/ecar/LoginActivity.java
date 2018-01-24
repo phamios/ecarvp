@@ -299,10 +299,10 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        if(sharedPreferences!= null) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
+//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+//        if(sharedPreferences!= null) {
+//            startActivity(new Intent(this, MainActivity.class));
+//        }
     }
 
     @Override
@@ -313,10 +313,10 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     public void onDestroy() {
         super.onDestroy();
 //        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
-        myPrefs.edit().remove("_site");
-        myPrefs.edit().clear();
-        myPrefs.edit().commit();
+//        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
+//        myPrefs.edit().remove("_site");
+//        myPrefs.edit().clear();
+//        myPrefs.edit().commit();
     }
 
 
