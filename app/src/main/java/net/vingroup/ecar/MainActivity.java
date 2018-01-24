@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 IMEIID = tel.getDeviceId().toString();
             } catch (Exception e) {
                 phonenum = "Error!!";
-                IMEIID = tel.getDeviceId().toString();
+                IMEIID =  "Error!!";
             }
         }
 

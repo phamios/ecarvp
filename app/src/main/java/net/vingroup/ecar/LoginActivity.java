@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                 IMEIID = tel.getDeviceId().toString();
             } catch (Exception e) {
                 phonenum = "Error!!";
-                IMEIID = tel.getDeviceId().toString();
+                IMEIID = "Error!!";
             }
         }
 
