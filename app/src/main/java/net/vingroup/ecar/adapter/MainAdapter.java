@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap; 
+import java.util.HashMap;
 
 /**
  * Created by dvmin on 1/19/2018.

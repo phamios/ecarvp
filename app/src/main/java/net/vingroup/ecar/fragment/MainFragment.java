@@ -135,16 +135,16 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         txtWait = (TextView) getActivity().findViewById(R.id.txtTongCho);
         txtOngoing = (TextView) getActivity().findViewById(R.id.txtTongDangdi);
 
-        txtWait.setText(totalWait + " yêu cầu");
-        txtOngoing.setText(totalInProcess + " yêu cầu");
+//        txtWait.setText(totalWait + " yêu cầu");
+//        txtOngoing.setText(totalInProcess + " yêu cầu");
 
-
+        Log.d("TotalWait",String.valueOf(totalWait));
+        Log.d("TotalOnGoing",String.valueOf(totalInProcess));
 
         txtSearchRoom = (EditText)getActivity().findViewById(R.id.txtSearchRoom);
         txtSearchRoom.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
                 String text = txtSearchRoom.getText().toString().toLowerCase(Locale.getDefault());
                 adapter.filter(text);
             }
@@ -152,13 +152,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1,
                                           int arg2, int arg3) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence arg0, int arg1, int arg2,
                                       int arg3) {
-                // TODO Auto-generated method stub
             }
         });
         myBook.clear();
@@ -305,6 +303,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(ARG_TEXT, listSite);
         outState.putInt(ARG_COLOR, mColor);
+        outState.putInt(ARG_WAIT,totalWait);
+        outState.putInt(ARG_PROCESS,totalInProcess);
         super.onSaveInstanceState(outState);
     }
 
