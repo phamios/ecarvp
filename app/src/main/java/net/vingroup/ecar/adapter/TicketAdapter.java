@@ -30,6 +30,7 @@ import net.vingroup.ecar.entity.EntityTicket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,11 +50,11 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
     int resource;
     private ProgressDialog pDialog;
     private String listSite;
-    Spinner spinnerDriver;
     private String[] items;
     String workerID = null;
     String driverCurrent = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
+    private Spinner spinnerDriver;
 
     public TicketAdapter(Context context, int resource, ArrayList<EntityTicket> bookList, String listSiteMain) {
         super(context, resource, bookList);
@@ -76,6 +77,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
             holder.frameevent = (RelativeLayout) view.findViewById(R.id.rowitemList);
             holder.txtDatecreate = (TextView) view.findViewById(R.id.txtCreateDate);
             holder.txtSiteName = (TextView) view.findViewById(R.id.SiteName);
+            holder.txtDriver = (TextView) view.findViewById(R.id.txtDriver);
             view.setTag(holder);
         } else {
             holder = (BookingHolder) view.getTag();
@@ -85,6 +87,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
+        TextView txtDriver  = view.findViewById(R.id.txtDriver);
         bttStatus.setTag(position);
 
 
@@ -94,6 +97,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
             dateCreate.setText(bookingList.get(position).getCreatedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
+            txtDriver.setText(bookingList.get(position).getTechnicianName());
             holder.frameevent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -103,30 +107,24 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
                     Button bttHuychuyen = (Button) dialog.findViewById(R.id.btn_no);
-                    final Spinner spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
+                    spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                     worldlist.clear();
                     new GetDriverAsyncTask().execute();
                     dialog.show();
-                    try {
-                        ArrayAdapter aa = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, worldlist);
-                        aa.notifyDataSetChanged();
-                        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinnerDriver.setAdapter(aa);
-                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(
-                                    AdapterView<?> adapterView, View view,
-                                    int i, long l) {
-                                driverCurrent = spinnerDriver.getSelectedItem().toString();
-                                Log.d("DRIVER SELECTED", ": " + spinnerDriver.getSelectedItem().toString());
-                            }
-                            @Override
-                            public void onNothingSelected( AdapterView<?> adapterView) {  }
-                        });
-                    } catch (Exception e) {
-                        Log.i("LISTDRIVER ERROR", e.toString());
-                        Toast.makeText(getContext(), "Có lỗi trong quá trình lấy danh sách lái xe", Toast.LENGTH_SHORT).show();
-                    }
+
+                    spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                            String selectedItemText = (String) adapterView.getItemAtPosition(position);
+                            driverCurrent = spinnerDriver.getSelectedItem().toString();
+                            driverCurrent = worldlist.get(i);
+                            Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
+                            Toast.makeText(getContext(), "Đã chọn: " + spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        }
+                    });
 
 
                     bttSubmit.setOnClickListener(new View.OnClickListener() {
@@ -212,7 +210,14 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            try{
+                ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
+                aa.notifyDataSetChanged();
+                spinnerDriver.setAdapter(aa);
 
+            } catch(Exception e){
+                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -231,7 +236,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
             String getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
-            getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
@@ -287,5 +292,6 @@ class BookingHolder {
     Button bttStatus;
     RelativeLayout frameevent;
     TextView txtSiteName;
+    TextView txtDriver;
 }
 

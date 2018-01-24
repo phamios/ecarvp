@@ -184,7 +184,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
         myBook.clear();
-
         new GetTicket().execute();
     }
 
@@ -245,10 +244,12 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             String OverTime = c.getString("OverTime");
                             String StatusAlert = c.getString("StatusAlert");
                             String StatusID = c.getString("StatusID");
+                            String Technical = c.getString("TechnicianName");
+                            String updateDate = c.getString("Updated_Date");
                             myBook.add(new EntityTicket(
                                     Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                     Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID
+                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate
                             ));
                             if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;

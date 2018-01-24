@@ -52,7 +52,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     String driverCurrent = null;
     String currentStatus = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
-    Spinner spinnerDriver;
+
+    private Spinner spinnerDriver;
     int CurrentAPICall = 0;
 
     public MainAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
@@ -77,6 +78,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             holder.frameevent = (RelativeLayout) view.findViewById(R.id.rowitemList);
             holder.txtDatecreate = (TextView) view.findViewById(R.id.txtCreateDate);
             holder.txtSiteName = (TextView) view.findViewById(R.id.SiteName);
+            holder.txtDriver = (TextView) view.findViewById(R.id.txtDriver);
             view.setTag(holder);
         }else
         {
@@ -88,6 +90,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
+        TextView txtDriver  = view.findViewById(R.id.txtDriver);
 
         bttStatus.setTag(position);
 
@@ -109,14 +112,16 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             dateCreate.setText(bookingList.get(position).getCreatedTime());
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
-
+            txtDriver.setText(bookingList.get(position).getTechnicianName());
             if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
 
             } else {
                 holder.frameevent.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
                         workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
+
                         final AppCompatDialog dialog = new AppCompatDialog(getContext());
                         dialog.setContentView(R.layout.dialog);
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
@@ -124,61 +129,44 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                             bttSubmit.setText("Điều xe");
                             currentStatus = "Đang chờ xử lý";
-                        }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
-                            bttSubmit.setText("Hoàn Thành");
-                            currentStatus = "Đã hoàn thành";
-                        }
-                        new GetDriverAsyncTask().execute();
-                        Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-                        spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
-                        worldlist.clear();
-                        try{
-                            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),R.layout.spinner_item,worldlist){
-                                @Override
-                                public View getDropDownView(int position, View convertView,ViewGroup parent) {
-                                    View view = super.getDropDownView(position, convertView, parent);
-                                    TextView tv = (TextView) view;
-                                    if(position%2 == 1) {
-                                        tv.setBackgroundColor(Color.parseColor("#FFC9A3FF"));
-                                    }
-                                    else {
-                                        tv.setBackgroundColor(Color.parseColor("#FFAF89E5"));
-                                    }
-                                    return view;
-                                }
-                            };
-                            spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-                            spinnerArrayAdapter.notifyDataSetChanged();
-                            spinnerDriver.setAdapter(spinnerArrayAdapter);
-                            spinnerDriver.setSelection(1);
-                            spinnerDriver.setSelected(true);
-                            Log.d("SPINNERSELECTED: ",spinnerDriver.getSelectedItem().toString());
+                            worldlist.clear();
+                            new GetDriverAsyncTask().execute();
+                            spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                             spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
                                     String selectedItemText = (String) adapterView.getItemAtPosition(position);
                                     driverCurrent = spinnerDriver.getSelectedItem().toString();
+                                    driverCurrent = worldlist.get(i);
                                     Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
-                                    Toast.makeText(getContext(), spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+                                    Toast.makeText(getContext(), "Đã chọn: " +spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
                                 }
                                 @Override
                                 public void onNothingSelected(AdapterView<?> adapterView) {
                                 }
                             });
-                        } catch(Exception e){
-                            Log.i("LISTDRIVER ERROR", e.toString());
-                            Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+
+                        }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                            bttSubmit.setText("Hoàn Thành");
+                            currentStatus = "Đã hoàn thành";
                         }
+                        Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
+
+
 
                         dialog.show();
+
+                        Log.d("CurrentAPICALL","response: " + CurrentAPICall);
 
 
 
                         bttSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                Log.d("DRIVERCURRENTNOW","Response: " + driverCurrent);
                                 bookingList.remove(position);
                                 notifyDataSetChanged();
+                                Log.d("CurrentAPICALL","response: " + CurrentAPICall);
                                 new ChangeStatus().execute();
                                 Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                                 dialog.dismiss();
@@ -266,6 +254,15 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            try{
+                ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
+                aa.notifyDataSetChanged();
+                spinnerDriver.setAdapter(aa);
+
+            } catch(Exception e){
+                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+            }
+
 //            try{
 //            } catch(Exception e){
 //                Log.i("LISTDRIVER ERROR", e.toString());
@@ -294,7 +291,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             } else if(CurrentAPICall == 2){
                 getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
             }
-            getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+
 
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {

@@ -65,7 +65,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
 
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
-        BookingHolder holder = new BookingHolder();
+        BookingHolderInProcess holder = new BookingHolderInProcess();
         if(view == null)
         {
             LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -77,10 +77,11 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             holder.frameevent = (RelativeLayout) view.findViewById(R.id.rowitemList);
             holder.txtDatecreate = (TextView) view.findViewById(R.id.txtCreateDate);
             holder.txtSiteName = (TextView) view.findViewById(R.id.SiteName);
+            holder.txtDriver = (TextView) view.findViewById(R.id.txtDriver);
             view.setTag(holder);
         }else
         {
-            holder = (BookingHolder) view.getTag();
+            holder = (BookingHolderInProcess) view.getTag();
         }
         //getting the view elements of the list from the view
         TextView bookingRoom = view.findViewById(R.id.txtRoom);
@@ -88,6 +89,7 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
+        TextView txtDriver  = view.findViewById(R.id.txtDriver);
         bttStatus.setTag(position);
 
 
@@ -102,18 +104,21 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             bookingRoom.setText(bookingList.get(position).getPlace() );
             bookingAddress.setText(bookingList.get(position).getTitle());
             bttStatus.setText(bookingList.get(position).getTotalTime());
-            dateCreate.setText(bookingList.get(position).getCreatedTime());
+            dateCreate.setText("Cập nhật: " +bookingList.get(position).getUpdated_Date());
             txtSitename.setText(bookingList.get(position).getSiteName());
+            txtDriver.setText(bookingList.get(position).getTechnicianName());
             holder.frameevent.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
                     final AppCompatDialog dialog = new AppCompatDialog(getContext());
-                    dialog.setContentView(R.layout.dialog);
+                    dialog.setContentView(R.layout.inprocess_dialog);
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
                     bttSubmit.setText("Hoàn thành");
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
+                    TextView txtDriverName = (TextView) dialog.findViewById(R.id.txtDriverName);
+                    txtDriverName.setText(bookingList.get(position).getTechnicianName());
                     dialog.show();
                     bttSubmit.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -207,4 +212,17 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
 
 }
 
+class BookingHolderInProcess {
+
+    TextView txtAddress;
+    TextView txtRoom;
+    TextView txtDatecreate;
+    TextView txtDangcho;
+    TextView txtDangdieuxe;
+    TextView txtDaDon;
+    Button bttStatus;
+    RelativeLayout frameevent;
+    TextView txtSiteName;
+    TextView txtDriver;
+}
 

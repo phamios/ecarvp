@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     String phonenum, IMEI;
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
+    private boolean shouldRecreate = false;
 
     private void initialise() {
         _emailText = (EditText)findViewById(R.id.input_email);
@@ -83,7 +84,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                 IMEIID = "Error!!";
             }
         }
-
 
         spinDomain.setOnItemSelectedListener(this);
         ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,domain);
@@ -215,10 +215,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
             return null;
         }
 
-
-
-
-
     }
 
 
@@ -293,32 +289,35 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     }
 
 
-
-
-
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("ECar Resume","OK");
 //        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
 //        if(sharedPreferences!= null) {
 //            startActivity(new Intent(this, MainActivity.class));
 //        }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
-//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
 //        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
 //        myPrefs.edit().remove("_site");
 //        myPrefs.edit().clear();
 //        myPrefs.edit().commit();
+//        Log.d("onDesTroy App", "BEMBEM LOGIN");
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            shouldRecreate = true;
+        }
+    }
 
 
 

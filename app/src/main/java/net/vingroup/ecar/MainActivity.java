@@ -323,24 +323,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onDestroy() {
-        super.onDestroy();
-//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
-        myPrefs.edit().remove("_site");
-        myPrefs.edit().clear();
-        myPrefs.edit().commit();
-    }
 
-    @Override
-    public void finish() {
-        super.finish();
-        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear();
-        editor.commit();
-        android.os.Process.killProcess(android.os.Process.myPid());
-    }
 
     @Override
     public void onLowMemory() {
@@ -361,16 +344,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initialUISetup();
-        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
-//        startActivity(new Intent(this, MainActivity.class));
-        Log.v("shouldRecreate: ",String.valueOf(shouldRecreate));
-        if (shouldRecreate){
-            startActivity(new Intent(this, MainActivity.class));
-        }
+//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+//        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+//        if(sharedPreferences!= null) {
+//            receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+//            startActivity(new Intent(this, MainActivity.class));
+//        }
+//        Log.v("shouldRecreate: ",String.valueOf(shouldRecreate));
+//        if (shouldRecreate){
+//            startActivity(new Intent(this, MainActivity.class));
+//        }
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",Context.MODE_PRIVATE);
+        myPrefs.edit().remove("_site");
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
+        getSharedPreferences("VINECAR", 0).edit().clear().commit(); // change PREF to yours
+        Log.d("onDesTroy App", "BEMBEM Activity");
+
+
+    }
 
 
 
