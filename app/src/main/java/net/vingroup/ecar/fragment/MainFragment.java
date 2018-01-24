@@ -132,8 +132,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);
-        txtWait = (TextView) getActivity().findViewById(R.id.txtTongCho);
-        txtOngoing = (TextView) getActivity().findViewById(R.id.txtTongDangdi);
+        txtWait = (TextView) view.findViewById(R.id.txtTongCho);
+        txtOngoing = (TextView) view.findViewById(R.id.txtTongDangdi);
 
 //        txtWait.setText(totalWait + " yêu cầu");
 //        txtOngoing.setText(totalInProcess + " yêu cầu");
