@@ -226,31 +226,35 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         JSONArray contacts = reader.getJSONArray("data");
                         for (int i = 0; i < contacts.length(); i++) {
                             JSONObject c = contacts.getJSONObject(i);
-                            String RowNumber = String.valueOf(c.getInt("RowNumber"));
-                            String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
-                            String Title = c.getString("Title");
-                            String SiteName = c.getString("SiteName");
-                            String Requester = c.getString("Requester");
-                            String ServiceName = c.getString("Requester");
-                            String CategoryName = c.getString("CategoryName");
-                            String CreatedTime = c.getString("CreatedTime");
-                            String DueByTime = c.getString("DueByTime");
-                            String CompletedTime = c.getString("CompletedTime");
-                            String ResolvedTime = c.getString("ResolvedTime");
-                            String Priority = c.getString("Priority");
-                            String StatusName = c.getString("StatusName");
-                            String Place = c.getString("Place");
-                            String TotalTime = c.getString("TotalTime");
-                            String OverTime = c.getString("OverTime");
-                            String StatusAlert = c.getString("StatusAlert");
-                            String StatusID = c.getString("StatusID");
-                            String Technical = c.getString("TechnicianName");
-                            String updateDate = c.getString("Updated_Date");
-                            myBook.add(new EntityTicket(
-                                    Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
-                                    Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate
-                            ));
+                            if(c.getString("StatusName").trim().equals("Mới tạo") || c.getString("StatusName").trim().equals("Đang chờ xử lý")){
+                                String RowNumber = String.valueOf(c.getInt("RowNumber"));
+                                String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
+                                String Title = c.getString("Title");
+                                String SiteName = c.getString("SiteName");
+                                String Requester = c.getString("Requester");
+                                String ServiceName = c.getString("Requester");
+                                String CategoryName = c.getString("CategoryName");
+                                String CreatedTime = c.getString("CreatedTime");
+                                String DueByTime = c.getString("DueByTime");
+                                String CompletedTime = c.getString("CompletedTime");
+                                String ResolvedTime = c.getString("ResolvedTime");
+                                String Priority = c.getString("Priority");
+                                String StatusName = c.getString("StatusName");
+                                String Place = c.getString("Place");
+                                String TotalTime = c.getString("TotalTime");
+                                String OverTime = c.getString("OverTime");
+                                String StatusAlert = c.getString("StatusAlert");
+                                String StatusID = c.getString("StatusID");
+                                String Technical = c.getString("TechnicianName");
+                                String updateDate = c.getString("Updated_Date");
+                                String SiteID = c.getString("SiteID");
+                                myBook.add(new EntityTicket(
+                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+                                ));
+                            }
+
                             if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;
                             } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){

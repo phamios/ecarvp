@@ -113,6 +113,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
             txtDriver.setText(bookingList.get(position).getTechnicianName());
+            listSite = bookingList.get(position).getSiteID();
             if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
 
             } else {

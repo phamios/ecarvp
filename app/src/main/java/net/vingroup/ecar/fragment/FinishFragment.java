@@ -176,10 +176,11 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
                                 String StatusID = c.getString("StatusID");
                                 String Technical = c.getString("TechnicianName");
                                 String updateDate = c.getString("Updated_Date");
+                                String SiteID = c.getString("SiteID");
                                 myBook.add(new EntityTicket(
                                         Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
                                 ));
                             }
                         }

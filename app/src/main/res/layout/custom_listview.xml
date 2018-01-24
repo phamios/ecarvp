@@ -26,10 +26,10 @@
 
             <Button
                 android:id="@+id/bttStatus"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:background="@drawable/round_button_chuadieu"
                 android:clickable="false"
                 android:focusable="false"
@@ -45,8 +45,8 @@
 
         <RelativeLayout
             android:id="@+id/frameevent2"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
+            android:layout_width="264dp"
+            android:layout_height="98dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginRight="20dp"
@@ -95,7 +95,7 @@
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:text=""
-                android:textSize="14dp"
+                android:textSize="11dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -107,17 +107,18 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/txtRoom"
-                android:text="SiteName" />
+                android:text="SiteName"
+                android:textSize="11dp" />
 
             <TextView
                 android:id="@+id/txtDriver"
-                android:textSize="11dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/SiteName"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textSize="11dp" />
 
         </RelativeLayout>
 
