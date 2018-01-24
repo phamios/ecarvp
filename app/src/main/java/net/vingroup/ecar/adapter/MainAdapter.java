@@ -113,14 +113,14 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
             txtDriver.setText(bookingList.get(position).getTechnicianName());
-            listSite = bookingList.get(position).getSiteID();
+
             if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
 
             } else {
                 holder.frameevent.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        listSite = bookingList.get(position).getSiteID();
                         workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
 
                         final AppCompatDialog dialog = new AppCompatDialog(getContext());
@@ -131,6 +131,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                             bttSubmit.setText("Điều xe");
                             currentStatus = "Đang chờ xử lý";
                             worldlist.clear();
+                            Log.d("SiteIDTechNical","SiteID: " + listSite);
                             new GetDriverAsyncTask().execute();
                             spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                             spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

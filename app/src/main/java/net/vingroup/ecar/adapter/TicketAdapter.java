@@ -94,14 +94,16 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
         if (bookingList.size() != 0) {
             bookingRoom.setText(bookingList.get(position).getPlace());
             bttStatus.setText(bookingList.get(position).getTotalTime());
-            dateCreate.setText(bookingList.get(position).getCreatedTime());
+            String[] txtTime = bookingList.get(position).getCreatedTime().split(" ");
+            dateCreate.setText(txtTime[1]);
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
             txtDriver.setText(bookingList.get(position).getTechnicianName());
-            listSite = bookingList.get(position).getSiteID();
+
             holder.frameevent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    listSite = bookingList.get(position).getSiteID();
                     workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
                     final AppCompatDialog dialog = new AppCompatDialog(getContext());
                     dialog.setContentView(R.layout.dialog);
@@ -110,6 +112,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
                     Button bttHuychuyen = (Button) dialog.findViewById(R.id.btn_no);
                     spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                     worldlist.clear();
+                    Log.d("SiteIDTechNical","SiteID: " + listSite);
                     new GetDriverAsyncTask().execute();
                     dialog.show();
 
