@@ -109,10 +109,11 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             }
 
             bttStatus.setText(bookingList.get(position).getTotalTime());
-            dateCreate.setText(bookingList.get(position).getCreatedTime());
+            String[] txtTime = bookingList.get(position).getCreatedTime().split(" ");
+            dateCreate.setText(txtTime[1]);
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
-            txtDriver.setText(bookingList.get(position).getTechnicianName());
+            txtDriver.setText("Lái xe: " + bookingList.get(position).getTechnicianName());
 
             if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
 

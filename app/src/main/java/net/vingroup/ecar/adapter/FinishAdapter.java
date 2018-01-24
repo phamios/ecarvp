@@ -103,7 +103,8 @@ public class FinishAdapter extends ArrayAdapter<EntityTicket> {
             bookingRoom.setText(bookingList.get(position).getPlace() );
             bookingAddress.setText(bookingList.get(position).getTitle());
             bttStatus.setText(bookingList.get(position).getTotalTime());
-            dateCreate.setText("Hoàn thành lúc: " + bookingList.get(position).getCompletedTime());
+            String[] txtTime = bookingList.get(position).getCompletedTime().split(" ");
+            dateCreate.setText(txtTime[1]);
             txtSitename.setText(bookingList.get(position).getSiteName());
             txtDriver.setText(bookingList.get(position).getTechnicianName());
         }

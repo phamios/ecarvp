@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Điều xe Vinpearl</string>
 
-    <string name="menu_main">Tổng quan</string>
-    <string name="menu_home">Chờ điều</string>
+    <string name="menu_main">Tất cả</string>
+    <string name="menu_home">Chờ xe</string>
     <string name="menu_dangdon">Đã điều</string>
     <string name="menu_daxong">Hoàn thành</string>
 

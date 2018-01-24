@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationItemView;
+import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -85,7 +87,14 @@ public class MainActivity extends AppCompatActivity {
         receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
-        mBottomNav.setItemIconTintList(null);
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNav.getChildAt(0);
+        for (int i = 0; i < menuView.getChildCount(); i++) {
+            BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(i);
+            itemView.setShiftingMode(false);
+            itemView.setMotionEventSplittingEnabled(false);
+            itemView.setChecked(false);
+        }
+//        mBottomNav.setItemIconTintList(null);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

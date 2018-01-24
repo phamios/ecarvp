@@ -98,7 +98,7 @@ public class TicketAdapter extends ArrayAdapter<EntityTicket> {
             dateCreate.setText(txtTime[1]);
             txtSitename.setText(bookingList.get(position).getSiteName());
             bookingAddress.setText(bookingList.get(position).getTitle());
-            txtDriver.setText(bookingList.get(position).getTechnicianName());
+            txtDriver.setText("Lái xe:" + bookingList.get(position).getTechnicianName());
 
             holder.frameevent.setOnClickListener(new View.OnClickListener() {
                 @Override

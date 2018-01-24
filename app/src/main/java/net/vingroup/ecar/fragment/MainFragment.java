@@ -299,8 +299,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
-            txtWait.setText(totalWait + " yêu cầu");
-            txtOngoing.setText(totalInProcess + " yêu cầu");
+            txtWait.setText("Chờ xe(" + totalWait + ")");
+            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
         }
     }
 

@@ -104,7 +104,13 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             bookingRoom.setText(bookingList.get(position).getPlace() );
             bookingAddress.setText(bookingList.get(position).getTitle());
             bttStatus.setText(bookingList.get(position).getTotalTime());
-            dateCreate.setText("Cập nhật: " +bookingList.get(position).getUpdated_Date());
+            String[] txtTime = bookingList.get(position).getUpdated_Date().split(" ");
+            if(txtTime.length == 1){
+                dateCreate.setText(bookingList.get(position).getUpdated_Date());
+            }else{
+                dateCreate.setText(txtTime[1]);
+            }
+
             txtSitename.setText(bookingList.get(position).getSiteName());
             txtDriver.setText(bookingList.get(position).getTechnicianName());
             holder.frameevent.setOnClickListener( new View.OnClickListener() {
