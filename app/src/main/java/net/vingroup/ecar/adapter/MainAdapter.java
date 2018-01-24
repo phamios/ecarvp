@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -131,7 +132,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
                         spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                         worldlist.clear();
-
                         try{
                             final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),R.layout.spinner_item,worldlist){
                                 @Override
@@ -151,6 +151,20 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                             spinnerArrayAdapter.notifyDataSetChanged();
                             spinnerDriver.setAdapter(spinnerArrayAdapter);
                             spinnerDriver.setSelection(1);
+                            spinnerDriver.setSelected(true);
+                            Log.d("SPINNERSELECTED: ",spinnerDriver.getSelectedItem().toString());
+                            spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                                    String selectedItemText = (String) adapterView.getItemAtPosition(position);
+                                    driverCurrent = spinnerDriver.getSelectedItem().toString();
+                                    Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
+                                    Toast.makeText(getContext(), spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+                                }
+                                @Override
+                                public void onNothingSelected(AdapterView<?> adapterView) {
+                                }
+                            });
                         } catch(Exception e){
                             Log.i("LISTDRIVER ERROR", e.toString());
                             Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
@@ -158,18 +172,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
                         dialog.show();
 
-//                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//                            @Override
-//                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-//                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
-//                                driverCurrent = spinnerDriver.getSelectedItem().toString();
-//                                Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
-//                                Toast.makeText(getContext(), spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
-//                            }
-//                            @Override
-//                            public void onNothingSelected(AdapterView<?> adapterView) {
-//                            }
-//                        });
+
 
                         bttSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
