@@ -86,7 +86,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         }
         //getting the view elements of the list from the view
         TextView bookingRoom = view.findViewById(R.id.txtRoom);
-        TextView bookingAddress = view.findViewById(R.id.txtAddress);
+        final TextView bookingAddress = view.findViewById(R.id.txtAddress);
         TextView dateCreate = view.findViewById(R.id.txtCreateDate);
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
@@ -108,6 +108,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
 
+
             bttStatus.setText(bookingList.get(position).getTotalTime());
             String[] txtTime = bookingList.get(position).getCreatedTime().split(" ");
             dateCreate.setText(txtTime[1]);
@@ -123,6 +124,17 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     public void onClick(View view) {
                         listSite = bookingList.get(position).getSiteID();
                         workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
+
+
+                        if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                            bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
+                            CurrentAPICall = 1;
+                        }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                            bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+                            CurrentAPICall = 2;
+                        }
+
+                        Log.d("currentStatus","Status: " + bookingList.get(position).getStatusName() + " | "  + CurrentAPICall);
 
                         final AppCompatDialog dialog = new AppCompatDialog(getContext());
                         dialog.setContentView(R.layout.dialog);
@@ -159,19 +171,23 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
                         dialog.show();
 
-                        Log.d("CurrentAPICALL","response: " + CurrentAPICall);
-
-
-
                         bttSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Log.d("DRIVERCURRENTNOW","Response: " + driverCurrent);
-                                bookingList.remove(position);
-                                notifyDataSetChanged();
                                 Log.d("CurrentAPICALL","response: " + CurrentAPICall);
+
                                 new ChangeStatus().execute();
+                                notifyDataSetChanged();
+
                                 Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
+                                if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                                    bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
+
+                                }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                                    bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+
+                                }
                                 dialog.dismiss();
                             }
                         });
@@ -265,12 +281,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             } catch(Exception e){
                 Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
             }
-
-//            try{
-//            } catch(Exception e){
-//                Log.i("LISTDRIVER ERROR", e.toString());
-//                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
-//            }
         }
     }
 
@@ -289,12 +299,13 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
             String getticketurl = null;
+
             if(CurrentAPICall == 1){
                 getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
             } else if(CurrentAPICall == 2){
                 getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
             }
-
+            Log.d("CurrentAPICall_SYNC","respond: " + CurrentAPICall);
 
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
@@ -336,6 +347,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            notifyDataSetChanged();
         }
     }
 

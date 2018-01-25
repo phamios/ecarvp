@@ -150,13 +150,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
 
             @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                                          int arg2, int arg3) {
+            public void beforeTextChanged(CharSequence arg0, int arg1,int arg2, int arg3) {
             }
 
             @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                                      int arg3) {
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
             }
         });
         myBook.clear();
@@ -226,7 +224,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         JSONArray contacts = reader.getJSONArray("data");
                         for (int i = 0; i < contacts.length(); i++) {
                             JSONObject c = contacts.getJSONObject(i);
-                            if(c.getString("StatusName").trim().equals("Mới tạo") || c.getString("StatusName").trim().equals("Đang chờ xử lý")){
                                 String RowNumber = String.valueOf(c.getInt("RowNumber"));
                                 String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
                                 String Title = c.getString("Title");
@@ -253,8 +250,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
                                         ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
                                 ));
-                            }
-
                             if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;
                             } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){

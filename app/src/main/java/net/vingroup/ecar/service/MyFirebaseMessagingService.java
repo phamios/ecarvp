@@ -7,9 +7,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -46,7 +48,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private void showNotification(String messageBody) {
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        String receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Bundle sendBundle = new Bundle();
+        sendBundle.putString("_sitename",receiveValue);
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtras(sendBundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
