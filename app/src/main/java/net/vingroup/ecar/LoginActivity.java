@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
     private boolean shouldRecreate = false;
+    SharedPreferences sp;
 
     private void initialise() {
         _emailText = (EditText)findViewById(R.id.input_email);
@@ -70,6 +71,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initialise();
+
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE);
 
@@ -106,6 +108,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         } else {
             Toast.makeText(getApplicationContext(),"Network not available",Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
@@ -146,7 +149,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
             editor.putString("_site", sitename);
             editor.putBoolean("connected", true);
             editor.commit();
-
         }
 
         @Override
@@ -216,9 +218,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         }
 
     }
-
-
-
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
@@ -293,9 +292,16 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     protected void onResume() {
         super.onResume();
         Log.d("ECar Resume","OK");
-//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-//        if(sharedPreferences!= null) {
-//            startActivity(new Intent(this, MainActivity.class));
+//        SharedPreferences sharedPreferences = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+//        sitename = sharedPreferences.getString("_site", "");
+//        Log.d("LoginResume","Response: " + sitename);
+//        if(sitename.trim() != null) {
+//            Bundle sendBundle = new Bundle();
+//            sendBundle.putString("_site", sitename);
+//            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+//            i.putExtras(sendBundle);
+//            startActivity(i);
+//            finish();
 //        }
     }
 
@@ -307,7 +313,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
 //        myPrefs.edit().remove("_site");
 //        myPrefs.edit().clear();
 //        myPrefs.edit().commit();
-//        Log.d("onDesTroy App", "BEMBEM LOGIN");
+        Log.d("onDesTroy App", "BEMBEM LOGIN");
 
     }
 

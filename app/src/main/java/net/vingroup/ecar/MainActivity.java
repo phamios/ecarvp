@@ -3,12 +3,16 @@ package net.vingroup.ecar;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.design.internal.BottomNavigationItemView;
@@ -23,6 +27,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class MainActivity extends AppCompatActivity {
     private static final String SELECTED_ITEM = "arg_selected_item";
@@ -62,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -85,15 +90,19 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
         receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Log.d("OnResumed","respond: " + receiveValue);
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNav.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(i);
-            itemView.setShiftingMode(false);
-            itemView.setMotionEventSplittingEnabled(false);
-            itemView.setChecked(false);
-        }
+//        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNav.getChildAt(0);
+//        for (int i = 0; i < menuView.getChildCount(); i++) {
+//            BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(i);
+//            itemView.setMotionEventSplittingEnabled(false);
+//        }
+        mBottomNav.setItemBackgroundResource(R.drawable.transparent);
+
+
+        BottomNavigationViewHelper.removeShiftMode(mBottomNav);
+
 //        mBottomNav.setItemIconTintList(null);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -145,8 +154,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(SELECTED_ITEM, mSelectedItem);
+        outState.putString(SELECTED_ITEM, receiveValue);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        receiveValue = savedInstanceState.getString(SELECTED_ITEM);
     }
 
     @Override
@@ -353,34 +368,81 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initialUISetup();
-//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-//        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
-//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-//        if(sharedPreferences!= null) {
-//            receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
-//            startActivity(new Intent(this, MainActivity.class));
-//        }
-//        Log.v("shouldRecreate: ",String.valueOf(shouldRecreate));
-//        if (shouldRecreate){
-//            startActivity(new Intent(this, MainActivity.class));
-//        }
-
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",Context.MODE_PRIVATE);
-        myPrefs.edit().remove("_site");
-        myPrefs.edit().clear();
-        myPrefs.edit().commit();
-        getSharedPreferences("VINECAR", 0).edit().clear().commit(); // change PREF to yours
-        Log.d("onDesTroy App", "BEMBEM Activity");
-
-
+//        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",Context.MODE_PRIVATE);
+//        myPrefs.edit().remove("_site");
+//        myPrefs.edit().clear();
+//        myPrefs.edit().commit();
+//        getSharedPreferences("VINECAR", 0).edit().clear().commit(); // change PREF to yours
+//        Log.d("onDesTroy App", "BEMBEM Activity");
     }
 
 
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.actions_exit:
+                new AlertDialog.Builder(this).setTitle("Vinpearl Ecar")
+                        .setMessage("Bạn chắc chắn muốn thoát khỏi ứng dụng ? ")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                SharedPreferences sharedPref = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+                                SharedPreferences sp=getSharedPreferences("login",MODE_PRIVATE);
+                                SharedPreferences.Editor e=sp.edit();
+                                e.clear();
+                                e.commit();
+                                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                SharedPreferences.Editor editor2 = settings.edit();
+                                editor2.remove("_site").commit();
+                                startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                                finish();
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+
+}
+
+class BottomNavigationViewHelper {
+
+    @SuppressLint("RestrictedApi")
+    static void removeShiftMode(BottomNavigationView view) {
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+        try {
+            Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
+            shiftingMode.setAccessible(true);
+            shiftingMode.setBoolean(menuView, false);
+            shiftingMode.setAccessible(false);
+            for (int i = 0; i < menuView.getChildCount(); i++) {
+                BottomNavigationItemView item = (BottomNavigationItemView) menuView.getChildAt(i);
+                item.setShiftingMode(false);
+                // set once again checked value, so view will be updated
+                item.setChecked(item.getItemData().isChecked());
+            }
+        } catch (NoSuchFieldException e) {
+            Log.e("ERROR NO SUCH FIELD", "Unable to get shift mode field");
+        } catch (IllegalAccessException e) {
+            Log.e("ERROR ILLEGAL ALG", "Unable to change value of shift mode");
+        }
+    }
 }

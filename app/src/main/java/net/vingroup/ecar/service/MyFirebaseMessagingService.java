@@ -50,6 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void showNotification(String messageBody) {
         SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
         String receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Log.d("NotificationDetect","respond: " + receiveValue);
         Bundle sendBundle = new Bundle();
         sendBundle.putString("_sitename",receiveValue);
         Intent intent = new Intent(this, MainActivity.class);

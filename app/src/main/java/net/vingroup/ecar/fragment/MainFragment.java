@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -176,7 +177,19 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
 
+
         new GetTicket().execute();
+
+        final Handler handler = new Handler();
+        Runnable refresh = new Runnable() {
+            @Override
+            public void run() {
+                onRefresh();
+                handler.postDelayed(this, 300 * 1000); // 60*1000 reload in 1 minute
+            }
+        };
+        handler.postDelayed(refresh, 300 * 1000);
+
     }
 
     @Override
@@ -307,6 +320,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         outState.putInt(ARG_PROCESS,totalInProcess);
         super.onSaveInstanceState(outState);
     }
+
+
+
 
 
 }
