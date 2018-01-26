@@ -4,13 +4,16 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     View notify_dangden;
     View notify_daden;
     BottomNavigationMenuView bottomNavigationMenuView;
+
     @SuppressLint("HardwareIds")
     @TargetApi(Build.VERSION_CODES.O)
     @Override
@@ -128,14 +132,17 @@ public class MainActivity extends AppCompatActivity {
         notify_dangden = bottomNavigationMenuView.getChildAt(1); // number of menu from left
         notify_daden = bottomNavigationMenuView.getChildAt(2); // number of menu from left
 
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                Log.d("ECARTHREAD","Loaded.....");
-                new getTotalTicket().execute();
-            }
-        });
 
-        t.start();
+
+        final Handler handler = new Handler();
+        Runnable refresh = new Runnable() {
+            @Override
+            public void run() {
+                new getTotalTicket().execute();
+                handler.postDelayed(this,  1000); // 60*1000 reload in 1 minute
+            }
+        };
+        handler.postDelayed(refresh, 1000);
 
     }
 
@@ -226,8 +233,6 @@ public class MainActivity extends AppCompatActivity {
             ft.add(R.id.container, frag, frag.getTag());
             ft.detach(frag).attach(frag).commit();
         }
-
-
     }
 
     protected void setFragment(Fragment fragment) {
@@ -354,9 +359,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
-//            txtWait.setText(totalWait + " yêu cầu");
-//            txtOngoing.setText(totalInProcess + " yêu cầu");
             new QBadgeView(getApplication()).bindTarget(notify_dangden).setBadgeNumber(totalWait);
             new QBadgeView(getApplication()).bindTarget(notify_daden).setBadgeNumber(totalInProcess);
         }
@@ -377,13 +379,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
         initialUISetup();
-        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
-        Log.d("MainActivity_RESUME","respond: " + receiveValue);
+        new getTotalTicket().execute();
+//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+//        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+//        Log.d("MainActivity_RESUME","respond: " + receiveValue);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
 
     @Override

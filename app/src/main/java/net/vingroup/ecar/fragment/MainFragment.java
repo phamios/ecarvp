@@ -165,10 +165,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void run() {
                 onRefresh();
-                handler.postDelayed(this, 300 * 1000); // 60*1000 reload in 1 minute
+                handler.postDelayed(this,  60*1000); // 60*1000 reload in 1 minute
             }
         };
-        handler.postDelayed(refresh, 300 * 1000);
+        handler.postDelayed(refresh, 60*1000);
 
 
         // =====================================Start Search ========================================
@@ -178,6 +178,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         bttSearch.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                myBook.clear();
                 new SearchAsync().execute();
             }
         });
@@ -361,10 +362,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             String updateDate = c.getString("Updated_Date");
                             String SiteID = c.getString("SiteID");
 
-                            if(Title.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
-                                    SiteName.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
-                                    ServiceName.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
-                                    Place.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ) {
+                            if(Place.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ) {
 
                                 myBook.add(new EntityTicket(
                                         Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
@@ -414,8 +412,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
-            txtWait.setText("Chờ xe(" + totalWait + ")");
-            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
+//            txtWait.setText("Chờ xe(" + totalWait + ")");
+//            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
         }
     }
 

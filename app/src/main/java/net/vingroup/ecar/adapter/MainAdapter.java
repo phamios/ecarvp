@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.vingroup.ecar.MainActivity;
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
@@ -282,6 +283,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             } catch(Exception e){
                 Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
             }
+
+
         }
     }
 

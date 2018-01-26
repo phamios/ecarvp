@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import q.rorbin.badgeview.QBadgeView;
@@ -71,7 +72,7 @@ public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    private class getTotalTicket extends AsyncTask<Context, Void, Void> {
+    private class getTotalTicket extends AsyncTask<Context, Void, ArrayList<String>> {
 
         @Override
         protected void onPreExecute() {
@@ -79,7 +80,8 @@ public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
         }
 
         @Override
-        protected Void doInBackground(Context... arg0) {
+        protected ArrayList<String> doInBackground(Context... arg0) {
+            ArrayList<String> number = null;
             totalWait = 0;
             totalInProcess = 0;
             JSONObject jsonRequest = new JSONObject();
@@ -101,6 +103,7 @@ public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
                             } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
                                 totalInProcess = totalInProcess + 1;
                             }
+                            number.add(totalWait + "|" + totalInProcess);
                         }
                     } else {
                         Log.d("ServiceError","respond: "+ "Error Data Dump!");
@@ -114,14 +117,11 @@ public class AutoUpdateBroadcastReceiver extends BroadcastReceiver {
                 e.printStackTrace();
             }
 
-            return null;
+            return number;
         }
 
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
 
-        }
+
     }
 
 
