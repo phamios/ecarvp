@@ -51,6 +51,8 @@
         </service>
         <!-- [END firebase_iid_service] -->
 
+        <receiver android:name="net.vingroup.ecar.service.AutoUpdateBroadcastReceiver"> </receiver>
+
     </application>
 
 </manifest>

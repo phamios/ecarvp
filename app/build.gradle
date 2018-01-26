@@ -31,5 +31,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('libs/okhttp-2.3.0.jar')
     implementation files('libs/gson-2.3.1.jar')
+
+    compile 'q.rorbin:badgeview:1.1.2'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -132,19 +132,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mColor = savedInstanceState.getInt(ARG_COLOR);
         }
 
-
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);
-        txtWait = (TextView) view.findViewById(R.id.txtTongCho);
-        txtOngoing = (TextView) view.findViewById(R.id.txtTongDangdi);
-
-//        txtWait.setText(totalWait + " yêu cầu");
-//        txtOngoing.setText(totalInProcess + " yêu cầu");
-
         Log.d("TotalWait",String.valueOf(totalWait));
         Log.d("TotalOnGoing",String.valueOf(totalInProcess));
-
 
         myBook.clear();
         lv = (ListView) view.findViewById(R.id.listViewMain);
@@ -309,8 +301,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
-            txtWait.setText("Chờ xe(" + totalWait + ")");
-            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
         }
     }
 
@@ -439,10 +429,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         outState.putInt(ARG_PROCESS,totalInProcess);
         super.onSaveInstanceState(outState);
     }
-
-
-
-
 
 }
 

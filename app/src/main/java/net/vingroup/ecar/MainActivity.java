@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -30,6 +29,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -40,6 +40,7 @@ import net.vingroup.ecar.fragment.FinishFragment;
 import net.vingroup.ecar.fragment.HomeFragment;
 import net.vingroup.ecar.fragment.InProcessFragment;
 import net.vingroup.ecar.fragment.MainFragment;
+import net.vingroup.ecar.service.AutoUpdateBroadcastReceiver;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+
+import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String SELECTED_ITEM = "arg_selected_item";
@@ -62,13 +65,18 @@ public class MainActivity extends AppCompatActivity {
     String phonenum, IMEI;
     int totalWait = 0;
     int totalInProcess = 0;
-
+    private AutoUpdateBroadcastReceiver autoUpdate;
+    View notify_dangden;
+    View notify_daden;
+    BottomNavigationMenuView bottomNavigationMenuView;
     @SuppressLint("HardwareIds")
     @TargetApi(Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        autoUpdate = new AutoUpdateBroadcastReceiver();
+
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -93,17 +101,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d("OnResumed","respond: " + receiveValue);
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
-//        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNav.getChildAt(0);
-//        for (int i = 0; i < menuView.getChildCount(); i++) {
-//            BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(i);
-//            itemView.setMotionEventSplittingEnabled(false);
-//        }
         mBottomNav.setSelectedItemId(R.id.menu_main);
         mBottomNav.setItemBackgroundResource(R.drawable.transparent);
         BottomNavigationViewHelper.removeShiftMode(mBottomNav);
-
-
-//        mBottomNav.setItemIconTintList(null);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -123,6 +123,19 @@ public class MainActivity extends AppCompatActivity {
 
         //Set default selected tab
         mBottomNav.getMenu().getItem(0).setChecked(true);
+
+        bottomNavigationMenuView = (BottomNavigationMenuView) mBottomNav.getChildAt(0);
+        notify_dangden = bottomNavigationMenuView.getChildAt(1); // number of menu from left
+        notify_daden = bottomNavigationMenuView.getChildAt(2); // number of menu from left
+
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                Log.d("ECARTHREAD","Loaded.....");
+                new getTotalTicket().execute();
+            }
+        });
+
+        t.start();
 
     }
 
@@ -205,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
             MenuItem menuItem = mBottomNav.getMenu().getItem(i);
             menuItem.setChecked(menuItem.getItemId() == item.getItemId());
         }
-
 
         updateToolbarText(item.getTitle());
 
@@ -345,11 +357,10 @@ public class MainActivity extends AppCompatActivity {
             // Dismiss the progress dialog
 //            txtWait.setText(totalWait + " yêu cầu");
 //            txtOngoing.setText(totalInProcess + " yêu cầu");
+            new QBadgeView(getApplication()).bindTarget(notify_dangden).setBadgeNumber(totalWait);
+            new QBadgeView(getApplication()).bindTarget(notify_daden).setBadgeNumber(totalInProcess);
         }
     }
-
-
-
 
     @Override
     public void onLowMemory() {
