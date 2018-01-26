@@ -23,6 +23,7 @@
             android:id="@+id/txtTongCho"
             android:layout_width="120dp"
             android:layout_height="30dp"
+            android:editable="false"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -38,6 +39,7 @@
             android:id="@+id/txtTongDangdi"
             android:layout_width="120dp"
             android:layout_height="30dp"
+            android:editable="false"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -59,19 +61,27 @@
         android:id="@+id/gridLayout"
         android:paddingTop="1dp"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/gridLayout2">
 
         <EditText
             android:id="@+id/txtSearchRoom"
-            android:layout_width="match_parent"
+            android:layout_width="267dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/textView5"
             android:layout_column="0"
             android:layout_row="1"
-            android:focusable="false"
             android:inputType="textPersonName"
             android:text="" />
+
+        <Button
+            android:id="@+id/bttSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:text="Tìm kiếm" />
 
     </GridLayout>
 

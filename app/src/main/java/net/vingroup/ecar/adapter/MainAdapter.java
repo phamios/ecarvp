@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by dvmin on 1/19/2018.
@@ -367,24 +368,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     }
 
 
-    public void filter(String charText) {
-//        charText = charText.toLowerCase(Locale.getDefault());
-//         bookingList.clear();
-//        if (charText.length() == 0) {
-//            bookingList.addAll(arraylist);
-//        }
-//        else
-//        {
-//            for (EntityTicket wp : arraylist)
-//            {
-//                if (wp.getServiceName().toLowerCase(Locale.getDefault()).contains(charText))
-//                {
-//                    bookingList.add(wp);
-//                }
-//            }
-//        }
-//        notifyDataSetChanged();
-    }
+
 
 
 

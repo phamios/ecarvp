@@ -98,10 +98,10 @@ public class MainActivity extends AppCompatActivity {
 //            BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(i);
 //            itemView.setMotionEventSplittingEnabled(false);
 //        }
+        mBottomNav.setSelectedItemId(R.id.menu_main);
         mBottomNav.setItemBackgroundResource(R.drawable.transparent);
-
-
         BottomNavigationViewHelper.removeShiftMode(mBottomNav);
+
 
 //        mBottomNav.setItemIconTintList(null);
         mBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         MenuItem selectedItem;
         if (savedInstanceState != null) {
             mSelectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
@@ -121,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
             selectedItem = mBottomNav.getMenu().getItem(0);
         }
         selectFragment(selectedItem);
+
+        //Set default selected tab
+        mBottomNav.getMenu().getItem(0).setChecked(true);
 
     }
 
@@ -370,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
         initialUISetup();
         SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
         receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Log.d("MainActivity_RESUME","respond: " + receiveValue);
     }
 
     @Override

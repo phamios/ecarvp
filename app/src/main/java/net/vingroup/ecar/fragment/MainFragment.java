@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -95,6 +96,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     ArrayList<EntityTicket> myBook = new ArrayList<>(0);
     EditText txtSearchRoom;
     MainAdapter adapter;
+    Button bttSearch;
+    String txtKeywordSearch;
     public static Fragment newInstance(int totalWait, int inprocess, String text, int color) {
         Fragment frag = new MainFragment();
         Bundle args = new Bundle();
@@ -110,7 +113,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+       return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @SuppressLint("ResourceAsColor")
@@ -142,22 +145,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Log.d("TotalWait",String.valueOf(totalWait));
         Log.d("TotalOnGoing",String.valueOf(totalInProcess));
 
-        txtSearchRoom = (EditText)getActivity().findViewById(R.id.txtSearchRoom);
-        txtSearchRoom.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                String text = txtSearchRoom.getText().toString().toLowerCase(Locale.getDefault());
-                adapter.filter(text);
-            }
 
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,int arg2, int arg3) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-        });
         myBook.clear();
         lv = (ListView) view.findViewById(R.id.listViewMain);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshMain);
@@ -189,6 +177,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         };
         handler.postDelayed(refresh, 300 * 1000);
+
+
+        // =====================================Start Search ========================================
+        txtSearchRoom = (EditText)view.findViewById(R.id.txtSearchRoom);
+        txtKeywordSearch = txtSearchRoom.getText().toString();
+        bttSearch = (Button) view.findViewById(R.id.bttSearch);
+        bttSearch.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SearchAsync().execute();
+            }
+        });
+        // =====================================End Search ========================================
+
 
     }
 
@@ -311,6 +313,123 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             txtOngoing.setText("Đã điều(" + totalInProcess + ")");
         }
     }
+
+
+    /**
+     * Search Button
+     */
+    private class SearchAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            totalWait = 0;
+            totalInProcess = 0;
+            JSONObject jsonRequest = new JSONObject();
+            String registerUrl = Constant.APIURL + Constant.APIGETTICKET;
+            Log.e(TAG, "Response from url: " + registerUrl);
+            try {
+                jsonRequest.put("SiteId", listSite);
+                String response = HttpClient.getInstance().post(getActivity(),registerUrl, jsonRequest.toString());
+                if(response.trim().equals("null")){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Do not have data !",  Toast.LENGTH_LONG) .show();
+                        }
+                    });
+                } else {
+                    JSONObject reader = new JSONObject(response);
+                    Log.i(TAG, "response : "+reader.toString());
+                    if(reader.getString("responseMsg").trim().equals("Success")){
+                        JSONArray contacts = reader.getJSONArray("data");
+                        for (int i = 0; i < contacts.length(); i++) {
+                            JSONObject c = contacts.getJSONObject(i);
+                            String RowNumber = String.valueOf(c.getInt("RowNumber"));
+                            String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
+                            String Title = c.getString("Title");
+                            String SiteName = c.getString("SiteName");
+                            String Requester = c.getString("Requester");
+                            String ServiceName = c.getString("ServiceName");
+                            String CategoryName = c.getString("CategoryName");
+                            String CreatedTime = c.getString("CreatedTime");
+                            String DueByTime = c.getString("DueByTime");
+                            String CompletedTime = c.getString("CompletedTime");
+                            String ResolvedTime = c.getString("ResolvedTime");
+                            String Priority = c.getString("Priority");
+                            String StatusName = c.getString("StatusName");
+                            String Place = c.getString("Place");
+                            String TotalTime = c.getString("TotalTime");
+                            String OverTime = c.getString("OverTime");
+                            String StatusAlert = c.getString("StatusAlert");
+                            String StatusID = c.getString("StatusID");
+                            String Technical = c.getString("TechnicianName");
+                            String updateDate = c.getString("Updated_Date");
+                            String SiteID = c.getString("SiteID");
+
+                            if(Title.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
+                                    SiteName.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
+                                    ServiceName.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ||
+                                    Place.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ) {
+
+                                myBook.add(new EntityTicket(
+                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+                                ));
+                            }
+
+                            if(c.getString("StatusName").trim().equals("Mới tạo")){
+                                totalWait = totalWait + 1;
+                            } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
+                                totalInProcess = totalInProcess + 1;
+                            }
+                        }
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), "Error Data Dump!",  Toast.LENGTH_LONG) .show();
+                            }
+                        });
+                    }
+                }
+
+            } catch (final JSONException e) {
+                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(),
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            adapter.setData(myBook);
+            lv.setAdapter(adapter);
+            txtWait.setText("Chờ xe(" + totalWait + ")");
+            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
+        }
+    }
+
+    // =============================End Search Button =========================================
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
