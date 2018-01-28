@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     SharedPreferences.Editor editor;
     private boolean shouldRecreate = false;
     SharedPreferences sp;
+    boolean movingInApp = false;
 
     private void initialise() {
         _emailText = (EditText)findViewById(R.id.input_email);
@@ -147,7 +148,10 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
             sharedPref = getApplicationContext().getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
             editor = sharedPref.edit();
             editor.putString("_site", sitename);
+            editor.putString("username", _emailText.getText().toString());
+            editor.putString("password", _password.getText().toString());
             editor.putBoolean("connected", true);
+
             editor.commit();
         }
 
@@ -184,6 +188,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                         JSONObject dataRespond  = reader.getJSONObject("data");
                         JSONObject jsonObj = new JSONObject(dataRespond.toString());
                         sitename = jsonObj.getString("SiteName");
+                        movingInApp = true;
                         Bundle sendBundle = new Bundle();
                         sendBundle.putInt("UserID",jsonObj.getInt("UserID"));
                         sendBundle.putString("FirstName",jsonObj.getString("FirstName"));
@@ -201,8 +206,6 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
                         });
                     }
                 }
-
-
             }catch (JSONException e){
                 Log.e(TAG, "JSON Exception", e);
             } catch (IOException e) {
@@ -221,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-        Toast.makeText(getApplicationContext(),"Đã chọn: " + domain[position], Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(),"Đã chọn: " + domain[position], Toast.LENGTH_SHORT).show();
         current_domain = domain[position];
     }
 
@@ -288,31 +291,15 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("ECar Resume","OK");
-//        SharedPreferences sharedPreferences = getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-//        sitename = sharedPreferences.getString("_site", "");
-//        Log.d("LoginResume","Response: " + sitename);
-//        if(sitename.trim() != null) {
-//            Bundle sendBundle = new Bundle();
-//            sendBundle.putString("_site", sitename);
-//            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-//            i.putExtras(sendBundle);
-//            startActivity(i);
-//            finish();
-//        }
-    }
+
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
-//        myPrefs.edit().remove("_site");
-//        myPrefs.edit().clear();
-//        myPrefs.edit().commit();
+        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
+        myPrefs.edit().clear();
+        myPrefs.edit().commit();
         Log.d("onDesTroy App", "BEMBEM LOGIN");
 
     }
@@ -325,6 +312,20 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("ECar Resume","OK");
+        movingInApp = false;
+
+    }
 
 
 }

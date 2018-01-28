@@ -99,9 +99,18 @@ public class MainActivity extends AppCompatActivity {
         OSVersion = android.os.Build.MODEL;
         DeviceID = FirebaseInstanceId.getInstance().getToken();
         Bundle receiveBundle = this.getIntent().getExtras();
-
         SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+
+        if(this.getIntent().getExtras() != null){
+            receiveValue = receiveBundle.getString("_sitename"); //sharedPreferences.getString("_site", "");//
+        } else if(receiveValue != null){
+            receiveValue = sharedPreferences.getString("_site", "");
+        } else {
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
+        }
+
         Log.d("OnResumed","respond: " + receiveValue);
 
         mBottomNav = (BottomNavigationView) findViewById(R.id.navigation);
@@ -329,12 +338,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     } else {
-                       MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "Error Data Dump!",  Toast.LENGTH_LONG) .show();
-                            }
-                        });
+//                        MainActivity.this.runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(MainActivity.this, "Error Data Dump!",  Toast.LENGTH_LONG) .show();
+//                            }
+//                        });
                     }
                 }
 
@@ -386,8 +395,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         initialUISetup();
         new getTotalTicket().execute();
-//        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
-//        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Log.d("OnResume","respond: " + receiveValue);
 //        Log.d("MainActivity_RESUME","respond: " + receiveValue);
 
     }
@@ -395,6 +405,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+        receiveValue = sharedPreferences.getString("_site", "");//receiveBundle.getString("_sitename");
+        Log.d("onPause","respond: " + receiveValue);
 
     }
 

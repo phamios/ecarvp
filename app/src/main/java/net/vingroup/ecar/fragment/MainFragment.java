@@ -6,6 +6,8 @@ package net.vingroup.ecar.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,6 +100,8 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     MainAdapter adapter;
     Button bttSearch;
     String txtKeywordSearch;
+    SharedPreferences sharedPreferences;
+
     public static Fragment newInstance(int totalWait, int inprocess, String text, int color) {
         Fragment frag = new MainFragment();
         Bundle args = new Bundle();
@@ -127,10 +131,20 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mColor = args.getInt(ARG_COLOR);
             totalInProcess = args.getInt(ARG_WAIT);
             totalWait = args.getInt(ARG_PROCESS);
+            Log.d("savedInstanceState","respond: savedInstanceState = null " );
         } else {
-            listSite = savedInstanceState.getString(ARG_TEXT);
+            sharedPreferences =  getActivity().getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+            listSite = sharedPreferences.getString("_site", "");
             mColor = savedInstanceState.getInt(ARG_COLOR);
+            Log.d("savedInstanceState","respond: savedInstanceState = true " );
         }
+
+        if(listSite == null){
+            sharedPreferences =  getActivity().getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+            listSite = sharedPreferences.getString("_site", "");
+        }
+
+
 
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
@@ -164,16 +178,36 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Runnable refresh = new Runnable() {
             @Override
             public void run() {
-                onRefresh();
-                handler.postDelayed(this,  60*1000); // 60*1000 reload in 1 minute
+                autoLoad();
+                handler.postDelayed(this,  240*1000); // 60*1000 reload in 1 minute
             }
         };
-        handler.postDelayed(refresh, 60*1000);
+        handler.postDelayed(refresh, 240*1000);
 
 
         // =====================================Start Search ========================================
         txtSearchRoom = (EditText)view.findViewById(R.id.txtSearchRoom);
         txtKeywordSearch = txtSearchRoom.getText().toString();
+
+        txtSearchRoom.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                String text = txtSearchRoom.getText().toString().toLowerCase(Locale.getDefault());
+                adapter.filter(text);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                      int arg3) {
+            }
+        });
+
         bttSearch = (Button) view.findViewById(R.id.bttSearch);
         bttSearch.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -183,8 +217,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
         // =====================================End Search ========================================
+    }
 
-
+    public void autoLoad(){
+        myBook.clear();
+        new onReload().execute();
     }
 
     @Override
@@ -216,6 +253,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             String registerUrl = Constant.APIURL + Constant.APIGETTICKET;
             Log.e(TAG, "Response from url: " + registerUrl);
             try {
+                Log.d("GETTICKET-LISTSITE","Result: " + listSite);
                 jsonRequest.put("SiteId", listSite);
                 String response = HttpClient.getInstance().post(getActivity(),registerUrl, jsonRequest.toString());
                 if(response.trim().equals("null")){
@@ -253,11 +291,123 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                 String Technical = c.getString("TechnicianName");
                                 String updateDate = c.getString("Updated_Date");
                                 String SiteID = c.getString("SiteID");
-                                myBook.add(new EntityTicket(
-                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                EntityTicket wp = new EntityTicket(Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
-                                ));
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID);
+                                myBook.add(wp);
+//                                myBook.add(new EntityTicket(
+//                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+//                                        Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+//                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+//                                ));
+                            if(c.getString("StatusName").trim().equals("Mới tạo")){
+                                totalWait = totalWait + 1;
+                            } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
+                                totalInProcess = totalInProcess + 1;
+                            }
+                        }
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), "Bạn đã thoát khỏi ứng dụng bất thường, vui lòng đằng nhập lại ... !",  Toast.LENGTH_LONG) .show();
+                            }
+                        });
+                    }
+                }
+
+            } catch (final JSONException e) {
+                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(),
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            adapter.setData(myBook);
+            lv.setAdapter(adapter);
+        }
+    }
+
+
+    /**
+     * Auto Reload
+     */
+    private class onReload extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            totalWait = 0;
+            totalInProcess = 0;
+            JSONObject jsonRequest = new JSONObject();
+            String registerUrl = Constant.APIURL + Constant.APIGETTICKET;
+            Log.e(TAG, "Response from url: " + registerUrl);
+            try {
+                jsonRequest.put("SiteId", listSite);
+                String response = HttpClient.getInstance().post(getActivity(),registerUrl, jsonRequest.toString());
+                if(response.trim().equals("null")){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Do not have data !",  Toast.LENGTH_LONG) .show();
+                        }
+                    });
+                } else {
+                    JSONObject reader = new JSONObject(response);
+                    Log.i(TAG, "response : "+reader.toString());
+                    if(reader.getString("responseMsg").trim().equals("Success")){
+                        JSONArray contacts = reader.getJSONArray("data");
+                        for (int i = 0; i < contacts.length(); i++) {
+                            JSONObject c = contacts.getJSONObject(i);
+                            String RowNumber = String.valueOf(c.getInt("RowNumber"));
+                            String WorlOrderId= String.valueOf(c.getInt("WorlOrderId"));
+                            String Title = c.getString("Title");
+                            String SiteName = c.getString("SiteName");
+                            String Requester = c.getString("Requester");
+                            String ServiceName = c.getString("Requester");
+                            String CategoryName = c.getString("CategoryName");
+                            String CreatedTime = c.getString("CreatedTime");
+                            String DueByTime = c.getString("DueByTime");
+                            String CompletedTime = c.getString("CompletedTime");
+                            String ResolvedTime = c.getString("ResolvedTime");
+                            String Priority = c.getString("Priority");
+                            String StatusName = c.getString("StatusName");
+                            String Place = c.getString("Place");
+                            String TotalTime = c.getString("TotalTime");
+                            String OverTime = c.getString("OverTime");
+                            String StatusAlert = c.getString("StatusAlert");
+                            String StatusID = c.getString("StatusID");
+                            String Technical = c.getString("TechnicianName");
+                            String updateDate = c.getString("Updated_Date");
+                            String SiteID = c.getString("SiteID");
+                            myBook.add(new EntityTicket(
+                                    Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
+                                    Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
+                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+                            ));
                             if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;
                             } else if(c.getString("StatusName").trim().equals("Đang chờ xử lý")){
@@ -296,14 +446,12 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
             adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
         }
     }
+
 
 
     /**
@@ -362,8 +510,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             String updateDate = c.getString("Updated_Date");
                             String SiteID = c.getString("SiteID");
 
-                            if(Place.toLowerCase().trim().equals(txtKeywordSearch.toLowerCase().trim()) ) {
-
+                            if(Place.trim().equals(txtKeywordSearch.trim()) ) {
                                 myBook.add(new EntityTicket(
                                         Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
@@ -412,8 +559,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
-//            txtWait.setText("Chờ xe(" + totalWait + ")");
-//            txtOngoing.setText("Đã điều(" + totalInProcess + ")");
         }
     }
 
@@ -427,6 +572,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         outState.putInt(ARG_PROCESS,totalInProcess);
         super.onSaveInstanceState(outState);
     }
+
+
+
+
 
 }
 

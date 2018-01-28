@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="1dp"
+    android:padding="2dp"
     android:id="@+id/rowitemList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -15,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingBottom="1px">
+        android:paddingBottom="5px">
 
         <RelativeLayout
             android:id="@+id/frameevent"
@@ -44,7 +45,7 @@
         <RelativeLayout
             android:id="@+id/frameevent2"
             android:layout_width="wrap_content"
-            android:layout_height="81dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginRight="10dp"
@@ -54,7 +55,9 @@
                 android:id="@+id/txtAddress"
                 android:layout_width="150dp"
                 android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/SiteName"
                 android:clickable="false"
@@ -71,8 +74,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/txtAddress"
-                android:layout_toRightOf="@+id/txtAddress"
+                android:layout_toEndOf="@+id/txtRoom"
+                android:layout_toRightOf="@+id/txtRoom"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -84,19 +87,17 @@
 
             <TextView
                 android:id="@+id/txtRoom"
-                android:layout_width="220dp"
+                android:layout_width="150dp"
                 android:layout_height="25dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/txtCreateDate"
-                android:layout_toStartOf="@+id/txtCreateDate"
                 android:clickable="false"
                 android:focusable="false"
-                android:textColor="@color/vingroupcolor"
                 android:focusableInTouchMode="false"
                 android:gravity="center_vertical"
                 android:text="Room"
+                android:textColor="@color/vingroupcolor"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -127,7 +128,40 @@
                 android:text="Technical"
                 android:textSize="11dp" />
 
+            <TextView
+                android:id="@+id/timepending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/txtDriver"
+                android:background="@color/color_chuadieu"
+                android:textColor="@color/color_home"
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/timestart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtDriver"
+                android:layout_centerHorizontal="true"
+                android:background="@color/color_dangdi"
+                android:textColor="@color/color_home"
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/timeend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/txtDriver"
+                android:background="@color/color_daxong"
+                android:textColor="@color/color_home"
+                android:textSize="11dp" />
+
         </RelativeLayout>
 
     </LinearLayout>
+
 </RelativeLayout>

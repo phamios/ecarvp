@@ -297,5 +297,8 @@ class BookingHolder {
     RelativeLayout frameevent;
     TextView txtSiteName;
     TextView txtDriver;
+    TextView timepending;
+    TextView timestart;
+    TextView timeend;
 }
 

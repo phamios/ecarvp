@@ -29,6 +29,7 @@ import net.vingroup.ecar.entity.EntityTicket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         this.resource = resource;
         this.bookingList = bookList;
         this.listSite = listSiteMain;
+        this.arraylist = new ArrayList<EntityTicket>();
+        this.arraylist.addAll(bookList);
     }
 
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -81,6 +84,9 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             holder.txtDatecreate = (TextView) view.findViewById(R.id.txtCreateDate);
             holder.txtSiteName = (TextView) view.findViewById(R.id.SiteName);
             holder.txtDriver = (TextView) view.findViewById(R.id.txtDriver);
+            holder.timestart = (TextView) view.findViewById(R.id.timestart);
+            holder.timepending = (TextView) view.findViewById(R.id.timepending);
+            holder.timeend = (TextView) view.findViewById(R.id.timeend);
             view.setTag(holder);
         }else
         {
@@ -93,6 +99,9 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         TextView txtSitename = view.findViewById(R.id.SiteName);
         final Button bttStatus = view.findViewById(R.id.bttStatus);
         TextView txtDriver  = view.findViewById(R.id.txtDriver);
+        TextView timePending = view.findViewById(R.id.timepending);
+        TextView timeStart = view.findViewById(R.id.timestart);
+        TextView timeEnd = view.findViewById(R.id.timeend);
 
         bttStatus.setTag(position);
 
@@ -110,12 +119,36 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
 
+            String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
+            timePending.setText(txtTimePending[1]);
+
+            if(bookingList.get(position).getUpdated_Date().length() > 1){
+                String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
+                if(txtTimeStart.length == 1){
+                    dateCreate.setText(bookingList.get(position).getUpdated_Date());
+                }else{
+                    timeStart.setText(txtTimeStart[1]);
+                }
+            }
+
+            if( bookingList.get(position).getCompletedTime().length() > 1){
+                String[] txtTimeEnd = bookingList.get(position).getCompletedTime().split(" ");
+                if(txtTimeEnd.length == 1){
+                    dateCreate.setText(bookingList.get(position).getCompletedTime());
+                }else{
+                    timeEnd.setText(txtTimeEnd[1]);
+                }
+            }
+
+
+
+
 
             bttStatus.setText(bookingList.get(position).getTotalTime());
             String[] txtTime = bookingList.get(position).getCreatedTime().split(" ");
             dateCreate.setText(txtTime[1]);
-            txtSitename.setText(bookingList.get(position).getSiteName());
-            bookingAddress.setText(bookingList.get(position).getTitle());
+            txtSitename.setText(bookingList.get(position).getTitle());
+            bookingAddress.setText(bookingList.get(position).getSiteName());
             txtDriver.setText("Lái xe: " + bookingList.get(position).getTechnicianName());
 
             if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
@@ -178,10 +211,9 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                             public void onClick(View v) {
                                 Log.d("DRIVERCURRENTNOW","Response: " + driverCurrent);
                                 Log.d("CurrentAPICALL","response: " + CurrentAPICall);
-
+                                bookingList.remove(position);
                                 new ChangeStatus().execute();
                                 notifyDataSetChanged();
-
                                 Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                                 if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                                     bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
@@ -371,6 +403,26 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     }
 
 
+
+    // Filter Class
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        bookingList.clear();
+        if (charText.length() == 0) {
+            bookingList.addAll(arraylist);
+        }
+        else
+        {
+            for (EntityTicket wp : arraylist)
+            {
+                if (wp.getTitle().toLowerCase(Locale.getDefault()).contains(charText))
+                {
+                    bookingList.add(wp);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
 
 
 
