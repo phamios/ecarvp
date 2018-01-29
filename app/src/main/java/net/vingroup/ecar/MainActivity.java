@@ -148,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 new getTotalTicket().execute();
-                handler.postDelayed(this,  1000); // 60*1000 reload in 1 minute
+                handler.postDelayed(this,  30*1000); // 60*1000 reload in 1 minute
             }
         };
-        handler.postDelayed(refresh, 1000);
+        handler.postDelayed(refresh, 30*1000);
 
     }
 

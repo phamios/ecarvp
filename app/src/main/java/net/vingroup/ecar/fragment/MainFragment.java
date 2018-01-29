@@ -144,8 +144,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             listSite = sharedPreferences.getString("_site", "");
         }
 
-
-
         // initialize views
         mContent = view.findViewById(R.id.fragment_content_main);
         mContent.setBackgroundColor(mColor);

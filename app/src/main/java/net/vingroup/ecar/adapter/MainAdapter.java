@@ -119,30 +119,47 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
 
-            String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
-            timePending.setText(txtTimePending[1]);
+            if(bookingList.get(position).getStatusID().equals("1")){
+                String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
+                timePending.setText(txtTimePending[1]);
+                timeStart.setText("");
+                timeEnd.setText("");
+            }
 
-            if(bookingList.get(position).getUpdated_Date().length() > 1){
+
+            if(bookingList.get(position).getStatusID().equals("2")){
                 String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
-                if(txtTimeStart.length == 1){
-                    dateCreate.setText(bookingList.get(position).getUpdated_Date());
-                }else{
-                    timeStart.setText(txtTimeStart[1]);
-                }
+                Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
+
+                String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
+                timePending.setText(txtTimePending[1]);
+
+                timeStart.setText( txtTimeStart[1]);
+                timeEnd.setText("");
+//                if(txtTimeStart.length == 1){
+////                    dateCreate.setText(bookingList.get(position).getUpdated_Date());
+//                }else{
+//                    timeStart.setText(txtTimeStart[1]);
+//                }
             }
 
-            if( bookingList.get(position).getCompletedTime().length() > 1){
+            if( bookingList.get(position).getStatusID().equals("3")){
+                String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
+                timePending.setText(txtTimePending[1]);
+
+                String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
+                Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
+                timeStart.setText(  txtTimeStart[1]);
+
                 String[] txtTimeEnd = bookingList.get(position).getCompletedTime().split(" ");
-                if(txtTimeEnd.length == 1){
-                    dateCreate.setText(bookingList.get(position).getCompletedTime());
-                }else{
-                    timeEnd.setText(txtTimeEnd[1]);
-                }
+                Log.d("TimeEnd","respond: " + txtTimeEnd[0] + "|" + txtTimeEnd[1]);
+                timeEnd.setText(  txtTimeEnd[1]);
+//                if(txtTimeEnd.length == 1){
+////                    dateCreate.setText(bookingList.get(position).getCompletedTime());
+//                }else{
+//                    timeEnd.setText(txtTimeEnd[1]);
+//                }
             }
-
-
-
-
 
             bttStatus.setText(bookingList.get(position).getTotalTime());
             String[] txtTime = bookingList.get(position).getCreatedTime().split(" ");
@@ -159,7 +176,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     public void onClick(View view) {
                         listSite = bookingList.get(position).getSiteID();
                         workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
-
 
                         if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                             bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
