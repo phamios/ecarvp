@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="200dp"
+    android:layout_height="250dp"
     android:background="#3E80B4"
     android:orientation="vertical" >
 
@@ -58,5 +58,32 @@
             android:textStyle="bold" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="127dp"
+        android:textColor="@color/color_home"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Ghi chú bên dưới:" />
+
+    <EditText
+        android:id="@+id/editNote"
+        android:layout_width="273dp"
+        android:layout_height="50dp"
+        android:background="@color/color_home"
+        android:gravity="top|left"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:layout_gravity="center"
+        android:maxLines="10"
+        android:minLines="6"
+        android:scrollbars="vertical" />
+
+    <Button
+        android:id="@+id/bttNoteSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Cập nhật ghi chú" />
 
 </LinearLayout>

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,7 +56,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     String driverCurrent = null;
     String currentStatus = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
-
+    String currentFirstName;
     private Spinner spinnerDriver;
     int CurrentAPICall = 0;
 
@@ -191,6 +192,18 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         dialog.setContentView(R.layout.dialog);
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                         Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
+
+                        EditText txtNote = (EditText) dialog.findViewById(R.id.editNote);
+                        String pushNote = txtNote.getText().toString();
+                        Button bttNOte = (Button)dialog.findViewById(R.id.bttNoteSubmit);
+                        currentFirstName = bookingList.get(position).getRequester().toString();
+                        bttNOte.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                new addNoteTask().execute();
+                            }
+                        });
+
                         if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                             bttSubmit.setText("Điều xe");
                             currentStatus = "Đang chờ xử lý";
@@ -419,7 +432,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     }
 
 
-
     // Filter Class
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());
@@ -441,7 +453,61 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     }
 
 
+    // Add Note
+    private class addNoteTask extends AsyncTask<Void, Void, Void> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            JSONObject jsonRequest = new JSONObject();
+            String getticketurl = null;
+
+            getticketurl = Constant.APIURL + Constant.APIADDNOTE;
+            Log.e("DRIVERGET", "Response from url: " + getticketurl);
+            try {
+                jsonRequest.put("workorderid", workerID);
+                jsonRequest.put("notestext",currentStatus );
+                jsonRequest.put("firstname",currentFirstName);
+                String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
+                Log.i("CHANGESTATUS", "POST : "+jsonRequest.toString());
+                if(response.trim().equals("null")){
+//                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
+                } else {
+                    JSONObject reader = new JSONObject(response);
+//                    Log.i("CHANGESTATUS", "response : "+reader.toString());
+//                    String data = reader.getString("data");
+//                    JSONObject reader2 = new JSONObject(data);
+//                    JSONArray respond = reader2.getJSONArray("result");
+//                    String status = null;
+//                    String message = null;
+//                    JSONObject c = respond.getJSONObject(i);
+//                    status =  c.getString("status");
+//                    message = c.getString("message");
+//                    if(status.trim().equals("Success")){
+//                        Log.d("UPDATESTATUS","Respond: Success");
+//                    } else {
+//                        Log.d("UPDATESTATUS","Respond: Failed");
+//                    }
+                }
+
+            } catch (final JSONException e) {
+                Log.e("ERROR UPDATESTATUS", "JSONException: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e("ERROR UPDATESTATUS", "IOException: " + e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            notifyDataSetChanged();
+        }
+    }
 
 }
  

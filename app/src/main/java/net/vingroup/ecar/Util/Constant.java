@@ -20,6 +20,7 @@ public class Constant {
     public static String APIUPDATETICKET = "/ApiServiceCenter/ChangeStatusTicket";
     public static String APIASSIGNDRIVER = "/ApiServiceCenter/AssignmentTechnician";
     public static String APIGETLISTSTATUSTICKET = "/ApiServiceCenter/ListStatus";
+    public static String APIADDNOTE = "/ApiServiceCenter/AddNotes";
 
     public static String APIINSERTDEVICE = "/ApiServiceCenter/DeviceIDInsert";
 

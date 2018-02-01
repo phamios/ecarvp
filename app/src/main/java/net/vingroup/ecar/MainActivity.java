@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     View notify_dangden;
     View notify_daden;
     BottomNavigationMenuView bottomNavigationMenuView;
-
+    String currentFirstName;
     @SuppressLint("HardwareIds")
     @TargetApi(Build.VERSION_CODES.O)
     @Override
@@ -109,8 +109,10 @@ public class MainActivity extends AppCompatActivity {
 
         if(this.getIntent().getExtras() != null){
             receiveValue = receiveBundle.getString("_sitename"); //sharedPreferences.getString("_site", "");//
+            currentFirstName  = receiveBundle.getString("FirstName");
         } else if(receiveValue != null){
             receiveValue = sharedPreferences.getString("_site", "");
+            currentFirstName  = sharedPreferences.getString("FirstName","");
         } else {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
