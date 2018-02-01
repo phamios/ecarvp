@@ -34,6 +34,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -80,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         autoUpdate = new AutoUpdateBroadcastReceiver();
+        Fabric.with(this, new Crashlytics());
+
+        // TODO: Move this to where you establish a user session
+        logUser();
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
 
@@ -205,6 +211,17 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    private void logUser() {
+        // TODO: Use the current user's information
+        // You can call any combination of these three methods
+        SharedPreferences sharedPreferences= this.getSharedPreferences("VINECAR", Context.MODE_PRIVATE);
+
+        Crashlytics.setUserIdentifier(sharedPreferences.getString("_site",""));
+        Crashlytics.setUserEmail(sharedPreferences.getString("username",""));
+        Crashlytics.setUserName("Vinpearl");
+    }
+
 
     private void selectFragment(MenuItem item) {
         Fragment frag = null;

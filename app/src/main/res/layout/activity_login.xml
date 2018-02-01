@@ -11,19 +11,19 @@
         android:paddingTop="56dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
-
+        linhkent18051992@gmail.com
         <EditText android:id="@+id/input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:text="sonpx1"
+            android:text=""
             android:hint="Mã nhân viên" />
 
         <EditText android:id="@+id/input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:text="1q2w3e4r!@#"
+            android:text=""
             android:hint="Mật khẩu"/>
 
         <Spinner

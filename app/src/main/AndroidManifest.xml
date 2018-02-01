@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="64211d1dd4a7b1b8f50c8883908061705f6432bc"
+            />
+
         <activity android:name=".LoginActivity">
 
         </activity>
@@ -52,6 +57,7 @@
         <!-- [END firebase_iid_service] -->
 
         <receiver android:name="net.vingroup.ecar.service.AutoUpdateBroadcastReceiver"> </receiver>
+
 
     </application>
 

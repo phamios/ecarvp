@@ -177,10 +177,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void run() {
                 autoLoad();
-                handler.postDelayed(this,  240*1000); // 60*1000 reload in 1 minute
+                handler.postDelayed(this,  180*1000); // 60*1000 reload in 1 minute
             }
         };
-        handler.postDelayed(refresh, 240*1000);
+        handler.postDelayed(refresh, 180*1000);
 
 
         // =====================================Start Search ========================================

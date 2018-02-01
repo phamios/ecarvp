@@ -35,5 +35,10 @@ dependencies {
     implementation files('libs/gson-2.3.1.jar')
 
     compile 'q.rorbin:badgeview:1.1.2'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true;
+    }
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
