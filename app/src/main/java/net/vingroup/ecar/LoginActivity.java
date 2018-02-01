@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity implements AdapterView.OnIt
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_WORLD_READABLE);
+        SharedPreferences myPrefs = this.getSharedPreferences("VINECAR",MODE_PRIVATE);
         myPrefs.edit().clear();
         myPrefs.edit().commit();
         Log.d("onDesTroy App", "BEMBEM LOGIN");

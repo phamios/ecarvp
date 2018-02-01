@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import net.vingroup.ecar.MainActivity;
 import net.vingroup.ecar.R;
@@ -35,6 +40,7 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -59,6 +65,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     String currentFirstName;
     private Spinner spinnerDriver;
     int CurrentAPICall = 0;
+    String pushNote;
+
 
     public MainAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
         super(context, resource, bookList);
@@ -192,15 +200,36 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         dialog.setContentView(R.layout.dialog);
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                         Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
+                        final EditText txtNote = (EditText)dialog.findViewById(R.id.editNote);
 
-                        EditText txtNote = (EditText) dialog.findViewById(R.id.editNote);
-                        String pushNote = txtNote.getText().toString();
-                        Button bttNOte = (Button)dialog.findViewById(R.id.bttNoteSubmit);
+
+
                         currentFirstName = bookingList.get(position).getRequester().toString();
-                        bttNOte.setOnClickListener(new View.OnClickListener() {
+
+//                        bttNOte.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                pushNote = txtNote.getText().toString();
+//                                new addNoteTask().execute();
+//                            }
+//                        });
+
+                        new GetDriverAsyncTask().execute();
+
+                        spinnerDriver= (SearchableSpinner)dialog.findViewById(R.id.driverspinner);
+//                            spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
+                        spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
-                            public void onClick(View v) {
-                                new addNoteTask().execute();
+                            public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
+                                String text = spinnerDriver.getSelectedItem().toString();
+                                driverCurrent = spinnerDriver.getSelectedItem().toString();
+                                driverCurrent = worldlist.get(i);
+                                Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
+                                Toast.makeText(getContext(), "Đã chọn: " +spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+                            }
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
                             }
                         });
 
@@ -209,29 +238,11 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                             currentStatus = "Đang chờ xử lý";
                             worldlist.clear();
                             Log.d("SiteIDTechNical","SiteID: " + listSite);
-                            new GetDriverAsyncTask().execute();
-                            spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
-                            spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-                                    String selectedItemText = (String) adapterView.getItemAtPosition(position);
-                                    driverCurrent = spinnerDriver.getSelectedItem().toString();
-                                    driverCurrent = worldlist.get(i);
-                                    Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
-                                    Toast.makeText(getContext(), "Đã chọn: " +spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
-                                }
-                                @Override
-                                public void onNothingSelected(AdapterView<?> adapterView) {
-                                }
-                            });
-
                         }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                             bttSubmit.setText("Hoàn Thành");
                             currentStatus = "Đã hoàn thành";
                         }
                         Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-
-
 
                         dialog.show();
 
@@ -243,14 +254,18 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                                 bookingList.remove(position);
                                 new ChangeStatus().execute();
                                 notifyDataSetChanged();
-                                Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
-                                if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
-                                    bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
-
-                                }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
-                                    bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
-
+                                pushNote = txtNote.getText().toString();
+                                if(pushNote.trim().toString().length() >= 2){
+                                    new addNoteTask().execute();
                                 }
+
+                                Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
+//                                if(bookingList.get(position).getStatusID() == "2"){
+//                                    bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
+//                                }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+//                                    bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+//
+//                                }
                                 dialog.dismiss();
                             }
                         });
@@ -309,6 +324,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     if(reader.getString("responseMsg").trim().equals("Success")){
                         myDriver.clear();
                         worldlist.clear();
+                        worldlist.add("-----------------------");
                         JSONArray contacts = reader.getJSONArray("data");
                         for (int i = 0; i < contacts.length(); i++) {
                             JSONObject c = contacts.getJSONObject(i);
@@ -316,6 +332,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                             String UserName= c.getString("UserName");
                             String FullName = c.getString("FullName");
                             myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
+
                             worldlist.add(FullName);
                         }
                     } else {
@@ -337,8 +354,10 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             try{
+
                 ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
                 aa.notifyDataSetChanged();
+
                 spinnerDriver.setAdapter(aa);
 
             } catch(Exception e){
@@ -348,7 +367,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
         }
     }
-
 
     /**
      * Get Driver Async Task Automatic
@@ -365,10 +383,10 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             JSONObject jsonRequest = new JSONObject();
             String getticketurl = null;
 
-            if(CurrentAPICall == 1){
-                getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
-            } else if(CurrentAPICall == 2){
+            if(driverCurrent == "-----------------------"){
                 getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
+            } else {
+                getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
             }
             Log.d("CurrentAPICall_SYNC","respond: " + CurrentAPICall);
 
@@ -431,7 +449,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         return position;
     }
 
-
     // Filter Class
     public void filter(String charText) {
         charText = charText.toLowerCase(Locale.getDefault());
@@ -452,7 +469,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         notifyDataSetChanged();
     }
 
-
     // Add Note
     private class addNoteTask extends AsyncTask<Void, Void, Void> {
 
@@ -470,28 +486,26 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("workorderid", workerID);
-                jsonRequest.put("notestext",currentStatus );
+                jsonRequest.put("notestext",pushNote );
                 jsonRequest.put("firstname",currentFirstName);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
-                Log.i("CHANGESTATUS", "POST : "+jsonRequest.toString());
+                Log.i("PUT_NOTE", "POST : "+jsonRequest.toString());
                 if(response.trim().equals("null")){
 //                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
                 } else {
                     JSONObject reader = new JSONObject(response);
-//                    Log.i("CHANGESTATUS", "response : "+reader.toString());
-//                    String data = reader.getString("data");
-//                    JSONObject reader2 = new JSONObject(data);
-//                    JSONArray respond = reader2.getJSONArray("result");
-//                    String status = null;
-//                    String message = null;
-//                    JSONObject c = respond.getJSONObject(i);
-//                    status =  c.getString("status");
-//                    message = c.getString("message");
-//                    if(status.trim().equals("Success")){
-//                        Log.d("UPDATESTATUS","Respond: Success");
-//                    } else {
-//                        Log.d("UPDATESTATUS","Respond: Failed");
-//                    }
+                    Log.i("CHANGESTATUS", "response : "+reader.toString());
+                    String data = reader.getString("data");
+                    JSONObject reader2 = new JSONObject(data);
+                    JSONArray respond = reader2.getJSONArray("result");
+                    String status = null;
+                    JSONObject c = respond.getJSONObject(0);
+                    status =  c.getString("status");
+                    if(status.trim().equals("Success")){
+                        Toast.makeText(context.getApplicationContext(), "Cập nhật ghi chú thành công !",  Toast.LENGTH_SHORT) .show();
+                    } else {
+                        Toast.makeText(context.getApplicationContext(), "Cập nhật ghi chú thất bại !",  Toast.LENGTH_SHORT) .show();
+                    }
                 }
 
             } catch (final JSONException e) {

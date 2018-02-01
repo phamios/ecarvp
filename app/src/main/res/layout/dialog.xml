@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="250dp"
+    android:layout_height="350dp"
     android:background="#3E80B4"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/txt_dia"
@@ -17,14 +18,21 @@
         android:focusable="false"
         android:textStyle="bold"/>
 
-    <Spinner
+
+    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:id="@+id/driverspinner"
-        android:layout_width="wrap_content"
+        android:layout_width="204dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="#2196F3"
+        android:spinnerMode="dialog"
         android:textAlignment="center"
-        android:popupBackground="#ffffff"
-        android:layout_margin="10dp"/>
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <LinearLayout
@@ -78,12 +86,5 @@
         android:maxLines="10"
         android:minLines="6"
         android:scrollbars="vertical" />
-
-    <Button
-        android:id="@+id/bttNoteSubmit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Cập nhật ghi chú" />
 
 </LinearLayout>

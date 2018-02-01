@@ -357,12 +357,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     } else {
-//                        MainActivity.this.runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(MainActivity.this, "Error Data Dump!",  Toast.LENGTH_LONG) .show();
-//                            }
-//                        });
                     }
                 }
 
