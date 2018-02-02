@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="350dp"
+    android:layout_height="280dp"
     android:background="#3E80B4"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -35,10 +35,31 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <TextView
+        android:layout_width="127dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Ghi chú bên dưới:"
+        android:textColor="@color/color_home" />
+
+    <EditText
+        android:id="@+id/editNote"
+        android:layout_width="273dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:background="@color/color_home"
+        android:gravity="top|left"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:maxLines="10"
+        android:minLines="6"
+        android:scrollbars="vertical" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_margin="10dp"
         android:background="#3E80B4"
         android:orientation="horizontal">
 
@@ -48,8 +69,8 @@
             android:layout_height="30dp"
             android:background="@android:color/white"
             android:clickable="true"
-            android:text="Điều xe"
             android:focusable="false"
+            android:text="Điều xe"
             android:textColor="#5DBCD2"
             android:textStyle="bold" />
 
@@ -66,25 +87,5 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="127dp"
-        android:textColor="@color/color_home"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Ghi chú bên dưới:" />
-
-    <EditText
-        android:id="@+id/editNote"
-        android:layout_width="273dp"
-        android:layout_height="50dp"
-        android:background="@color/color_home"
-        android:gravity="top|left"
-        android:inputType="textMultiLine"
-        android:lines="8"
-        android:layout_gravity="center"
-        android:maxLines="10"
-        android:minLines="6"
-        android:scrollbars="vertical" />
 
 </LinearLayout>

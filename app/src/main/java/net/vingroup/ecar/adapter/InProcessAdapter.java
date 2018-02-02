@@ -201,9 +201,6 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                             Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                         }
                     });
-
-
-
                 }
             });
         }

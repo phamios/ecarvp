@@ -21,6 +21,7 @@ import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
 import net.vingroup.ecar.adapter.InProcessAdapter;
+import net.vingroup.ecar.adapter.MainAdapter;
 import net.vingroup.ecar.entity.EntityTicket;
 
 import org.json.JSONArray;
@@ -215,7 +216,7 @@ public class InProcessFragment  extends Fragment implements SwipeRefreshLayout.O
             /**
              * Updating parsed JSON data into ListView
              * */
-            InProcessAdapter adapter = new InProcessAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            MainAdapter adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
         }

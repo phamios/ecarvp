@@ -24,6 +24,7 @@ import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
 import net.vingroup.ecar.Util.HttpClient;
 import net.vingroup.ecar.adapter.FinishAdapter;
+import net.vingroup.ecar.adapter.MainAdapter;
 import net.vingroup.ecar.entity.EntityTicket;
 
 import org.json.JSONArray;
@@ -224,7 +225,7 @@ public class FinishFragment extends Fragment implements SwipeRefreshLayout.OnRef
             /**
              * Updating parsed JSON data into ListView
              * */
-            FinishAdapter adapter = new FinishAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
+            MainAdapter adapter = new MainAdapter(getActivity(), R.layout.custom_listview, myBook,listSite);
             adapter.setData(myBook);
             lv.setAdapter(adapter);
         }
