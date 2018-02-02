@@ -137,20 +137,16 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
 
             if(bookingList.get(position).getStatusID().equals("2")){
-                String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
-                Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
+                if(bookingList.get(position).getUpdated_Date().length() >= 2){
+                    String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
+                    Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
+                    timeStart.setText( txtTimeStart[1]);
 
+                }
                 String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
                 timePending.setText(txtTimePending[1]);
-
-                timeStart.setText( txtTimeStart[1]);
                 timeEnd.setText("");
-//                if(txtTimeStart.length == 1){
-////                    dateCreate.setText(bookingList.get(position).getUpdated_Date());
-//                }else{
-//                    timeStart.setText(txtTimeStart[1]);
-//                }
-            }
+             }
 
             if( bookingList.get(position).getStatusID().equals("3")){
                 String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
