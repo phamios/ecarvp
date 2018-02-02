@@ -156,18 +156,22 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                 String[] txtTimePending = bookingList.get(position).getCreatedTime().split(" ");
                 timePending.setText(txtTimePending[1]);
 
-                String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
-                Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
-                timeStart.setText(  txtTimeStart[1]);
+                if(bookingList.get(position).getUpdated_Date().trim().equals("")){
 
-                String[] txtTimeEnd = bookingList.get(position).getCompletedTime().split(" ");
-                Log.d("TimeEnd","respond: " + txtTimeEnd[0] + "|" + txtTimeEnd[1]);
-                timeEnd.setText(  txtTimeEnd[1]);
-//                if(txtTimeEnd.length == 1){
-////                    dateCreate.setText(bookingList.get(position).getCompletedTime());
-//                }else{
-//                    timeEnd.setText(txtTimeEnd[1]);
-//                }
+                } else {
+                    String[] txtTimeStart = bookingList.get(position).getUpdated_Date().split(" ");
+                    Log.d("TimeEnd","respond: " + txtTimeStart[0] + "|" + txtTimeStart[1]);
+                    timeStart.setText(  txtTimeStart[1]);
+                }
+
+                if(bookingList.get(position).getCompletedTime().trim().equals("")){
+
+                }else{
+                    String[] txtTimeEnd = bookingList.get(position).getCompletedTime().split(" ");
+                    Log.d("TimeEnd","respond: " + txtTimeEnd[0] + "|" + txtTimeEnd[1]);
+                    timeEnd.setText(  txtTimeEnd[1]);
+                }
+
             }
 
             bttStatus.setText(bookingList.get(position).getTotalTime());
