@@ -27,8 +27,15 @@ public class EntityTicket {
     String TechnicianName;
     String Updated_Date;
     String StatusID;
+    String NotesText;
 
-    public EntityTicket(int rowNumber, int worlOrderId, String title, String siteName, String requester, String serviceName, String categoryName, String createdTime, String dueByTime, String completedTime, String resolvedTime, String priority, String statusName, String place, String totalTime, String overTime, String statusAlert,String StatusID1, String TechnicianName1, String Updated_Date1,String siteID) {
+    public EntityTicket(int rowNumber, int worlOrderId, String title,
+                        String siteName, String requester, String serviceName,
+                        String categoryName, String createdTime, String dueByTime,
+                        String completedTime, String resolvedTime, String priority,
+                        String statusName, String place, String totalTime, String overTime,
+                        String statusAlert,String StatusID1,
+                        String TechnicianName1, String Updated_Date1,String siteID, String noteText) {
         RowNumber = rowNumber;
         WorlOrderId = worlOrderId;
         Title = title;
@@ -50,6 +57,7 @@ public class EntityTicket {
         TechnicianName = TechnicianName1;
         Updated_Date = Updated_Date1;
         SiteID = siteID;
+        NotesText = noteText;
 
     }
 
@@ -221,4 +229,13 @@ public class EntityTicket {
     public void setSiteID(String siteID) {
         SiteID = siteID;
     }
+
+    public String getNotesText() {
+        return NotesText;
+    }
+
+    public void setNotesText(String notesText) {
+        NotesText = notesText;
+    }
+
 }

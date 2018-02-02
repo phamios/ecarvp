@@ -289,9 +289,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                 String Technical = c.getString("TechnicianName");
                                 String updateDate = c.getString("Updated_Date");
                                 String SiteID = c.getString("SiteID");
+                                String noteText = c.getString("NotesText");
                                 EntityTicket wp = new EntityTicket(Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID);
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID,noteText);
                                 myBook.add(wp);
 //                                myBook.add(new EntityTicket(
 //                                        Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
@@ -401,10 +402,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             String Technical = c.getString("TechnicianName");
                             String updateDate = c.getString("Updated_Date");
                             String SiteID = c.getString("SiteID");
+                            String noteText = c.getString("NotesText");
                             myBook.add(new EntityTicket(
                                     Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                     Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+                                    ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID,noteText
                             ));
                             if(c.getString("StatusName").trim().equals("Mới tạo")){
                                 totalWait = totalWait + 1;
@@ -508,11 +510,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             String updateDate = c.getString("Updated_Date");
                             String SiteID = c.getString("SiteID");
 
+                            String noteText = c.getString("NotesText");
+
+
                             if(Place.trim().equals(txtKeywordSearch.trim()) ) {
                                 myBook.add(new EntityTicket(
                                         Integer.valueOf(RowNumber),Integer.valueOf(WorlOrderId),Title,SiteName,
                                         Requester,ServiceName,CategoryName,CreatedTime,DueByTime,CompletedTime,
-                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID
+                                        ResolvedTime,Priority,StatusName,Place,TotalTime,OverTime,StatusAlert,StatusID,Technical,updateDate,SiteID,noteText
                                 ));
                             }
 

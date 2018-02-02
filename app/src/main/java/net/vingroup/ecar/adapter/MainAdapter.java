@@ -205,8 +205,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                         Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
                         final EditText txtNote = (EditText)dialog.findViewById(R.id.editNote);
-
-
+                        txtNote.setText(bookingList.get(position).getNotesText());
 
                         currentFirstName = bookingList.get(position).getRequester().toString();
 
