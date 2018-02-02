@@ -208,19 +208,9 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         txtNote.setText(bookingList.get(position).getNotesText());
 
                         currentFirstName = bookingList.get(position).getRequester().toString();
-
-//                        bttNOte.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                pushNote = txtNote.getText().toString();
-//                                new addNoteTask().execute();
-//                            }
-//                        });
-
                         new GetDriverAsyncTask().execute();
 
                         spinnerDriver= (SearchableSpinner)dialog.findViewById(R.id.driverspinner);
-//                            spinnerDriver = (Spinner) dialog.findViewById(R.id.driverspinner);
                         spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
@@ -263,12 +253,6 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                                 }
 
                                 Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
-//                                if(bookingList.get(position).getStatusID() == "2"){
-//                                    bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
-//                                }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
-//                                    bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
-//
-//                                }
                                 dialog.dismiss();
                             }
                         });

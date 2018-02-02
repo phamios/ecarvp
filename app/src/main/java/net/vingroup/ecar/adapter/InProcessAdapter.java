@@ -14,12 +14,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import net.vingroup.ecar.R;
 import net.vingroup.ecar.Util.Constant;
@@ -49,11 +52,17 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
     int resource;
     private ProgressDialog pDialog;
     private String listSite;
-    Spinner spinnerDriver;
     private String[] items;
     String workerID = null;
     String driverCurrent = null;
     ArrayList<String> worldlist = new ArrayList<>(0);
+
+    String currentFirstName;
+    private Spinner spinnerDriver;
+    int CurrentAPICall = 0;
+    String pushNote;
+    String currentStatus = null;
+
 
     public InProcessAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
         super(context, resource, bookList);
@@ -116,22 +125,70 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
             holder.frameevent.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    listSite = bookingList.get(position).getSiteID();
                     workerID = String.valueOf(bookingList.get(position).getWorlOrderId());
+
+                    if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                        bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
+                        CurrentAPICall = 1;
+                    }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                        bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+                        CurrentAPICall = 2;
+                    }
+
+                    Log.d("currentStatus","Status: " + bookingList.get(position).getStatusName() + " | "  + CurrentAPICall);
+
                     final AppCompatDialog dialog = new AppCompatDialog(getContext());
-                    dialog.setContentView(R.layout.inprocess_dialog);
+                    dialog.setContentView(R.layout.dialog);
                     dialog.setTitle(bookingList.get(position).getTitle() + " - " + bookingList.get(position).getServiceName());
                     Button bttSubmit = (Button) dialog.findViewById(R.id.btn_yes);
-                    bttSubmit.setText("Hoàn thành");
+                    final EditText txtNote = (EditText)dialog.findViewById(R.id.editNote);
+                    txtNote.setText(bookingList.get(position).getNotesText());
+
+                    currentFirstName = bookingList.get(position).getRequester().toString();
+                    new GetDriverAsyncTask().execute();
+
+                    spinnerDriver= (SearchableSpinner)dialog.findViewById(R.id.driverspinner);
+                    spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
+                            String selectedItemText = (String) adapterView.getItemAtPosition(position);
+                            String text = spinnerDriver.getSelectedItem().toString();
+                            driverCurrent = spinnerDriver.getSelectedItem().toString();
+                            driverCurrent = worldlist.get(i);
+                            Log.d("DRIVER SELECTED", ": " + selectedItemText + "|" + driverCurrent);
+                            Toast.makeText(getContext(), "Đã chọn: " +spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        }
+                    });
+
+                    if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
+                        bttSubmit.setText("Điều xe");
+                        currentStatus = "Đang chờ xử lý";
+                        worldlist.clear();
+                        Log.d("SiteIDTechNical","SiteID: " + listSite);
+                    }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
+                        bttSubmit.setText("Hoàn Thành");
+                        currentStatus = "Đã hoàn thành";
+                    }
                     Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
-                    TextView txtDriverName = (TextView) dialog.findViewById(R.id.txtDriverName);
-                    txtDriverName.setText(bookingList.get(position).getTechnicianName());
+
                     dialog.show();
+
                     bttSubmit.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            new ChangeStatus().execute();
+                            Log.d("DRIVERCURRENTNOW","Response: " + driverCurrent);
+                            Log.d("CurrentAPICALL","response: " + CurrentAPICall);
                             bookingList.remove(position);
+                            new ChangeStatus().execute();
                             notifyDataSetChanged();
+                            pushNote = txtNote.getText().toString();
+                            if(pushNote.trim().toString().length() >= 2){
+                                new addNoteTask().execute();
+                            }
                             Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                             dialog.dismiss();
                         }
@@ -144,8 +201,10 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
                             Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                         }
                     });
-                }
 
+
+
+                }
             });
         }
         return view;
@@ -216,10 +275,135 @@ public class InProcessAdapter extends ArrayAdapter<EntityTicket> {
         }
     }
 
+
+    // Add Note
+    private class addNoteTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            JSONObject jsonRequest = new JSONObject();
+            String getticketurl = null;
+
+            getticketurl = Constant.APIURL + Constant.APIADDNOTE;
+            Log.e("DRIVERGET", "Response from url: " + getticketurl);
+            try {
+                jsonRequest.put("workorderid", workerID);
+                jsonRequest.put("notestext",pushNote );
+                jsonRequest.put("firstname",currentFirstName);
+                String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
+                Log.i("PUT_NOTE", "POST : "+jsonRequest.toString());
+                if(response.trim().equals("null")){
+//                    Toast.makeText(getContext(), "Do not have data !",  Toast.LENGTH_LONG) .show();
+                } else {
+                    JSONObject reader = new JSONObject(response);
+                    Log.i("CHANGESTATUS", "response : "+reader.toString());
+                    String data = reader.getString("data");
+                    JSONObject reader2 = new JSONObject(data);
+                    JSONArray respond = reader2.getJSONArray("result");
+                    String status = null;
+                    JSONObject c = respond.getJSONObject(0);
+                    status =  c.getString("status");
+                    if(status.trim().equals("Success")){
+                        Toast.makeText(context.getApplicationContext(), "Cập nhật ghi chú thành công !",  Toast.LENGTH_SHORT) .show();
+                    } else {
+                        Toast.makeText(context.getApplicationContext(), "Cập nhật ghi chú thất bại !",  Toast.LENGTH_SHORT) .show();
+                    }
+                }
+
+            } catch (final JSONException e) {
+                Log.e("ERROR UPDATESTATUS", "JSONException: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e("ERROR UPDATESTATUS", "IOException: " + e.getMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            notifyDataSetChanged();
+        }
+    }
+
+
+    /**
+     * Get Driver Async Task Automatic
+     */
+    private class GetDriverAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            JSONObject jsonRequest = new JSONObject();
+            String getticketurl = getticketurl = Constant.APIURL + Constant.APIGETDRIVER;
+            Log.e("DRIVERGET", "Response from url: " + getticketurl);
+            try {
+                jsonRequest.put("SiteId", listSite);
+                String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
+                if(response.trim().equals("null")){
+
+                } else {
+                    JSONObject reader = new JSONObject(response);
+                    Log.i("LISTDRIVER", "response : "+reader.toString());
+                    if(reader.getString("responseMsg").trim().equals("Success")){
+                        myDriver.clear();
+                        worldlist.clear();
+                        worldlist.add("-----------------------");
+                        JSONArray contacts = reader.getJSONArray("data");
+                        for (int i = 0; i < contacts.length(); i++) {
+                            JSONObject c = contacts.getJSONObject(i);
+                            String UserID = String.valueOf(c.getInt("UserID"));
+                            String UserName= c.getString("UserName");
+                            String FullName = c.getString("FullName");
+                            myDriver.add(new EntityDriver(UserID,UserName,FullName  ));
+
+                            worldlist.add(FullName);
+                        }
+                    } else {
+                        worldlist = null;
+                    }
+                }
+
+            } catch (final JSONException e) {
+                Log.e("ERROR DRIVERLIST", "Json parsing error: " + e.getMessage());
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            try{
+
+                ArrayAdapter aa = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,worldlist);
+                aa.notifyDataSetChanged();
+
+                spinnerDriver.setAdapter(aa);
+
+            } catch(Exception e){
+                Toast.makeText(getContext(),"Có lỗi trong quá trình lấy danh sách lái xe",Toast.LENGTH_SHORT).show();
+            }
+
+
+        }
+    }
+
 }
 
 class BookingHolderInProcess {
-
     TextView txtAddress;
     TextView txtRoom;
     TextView txtDatecreate;
