@@ -207,6 +207,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     currentFirstName = bookingList.get(position).getRequester().toString();
                     TextView txtTitle = (TextView)dialog.findViewById(R.id.txt_dia);
 
+                    pushNote = txtNote.getText().toString();
 
                     Log.d("DRIVER SELECTED", ": "  + driverCurrent);
 
@@ -243,7 +244,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         if (bookingList.get(position).getTechnicianName().trim() != null) {
                             int spinnerPosition = spinnerAdapter.getPosition(bookingList.get(position).getTechnicianName().trim());
                             spinnerDriver.setSelection(spinnerPosition);
-//                                driverCurrent = spinnerDriver.getSelectedItem().toString();
+//                            driverCurrent = spinnerDriver.getSelectedItem().toString();
                         }
                     }
 
@@ -303,6 +304,10 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                                 Toast.makeText(getContext(), "Đã cập nhật thay đổi !.",  Toast.LENGTH_SHORT) .show();
                                 dialog.dismiss();
                             }else {
+                                pushNote = txtNote.getText().toString();
+                                if(pushNote.trim().toString().length() >= 2){
+                                    new addNoteTask().execute();
+                                }
                                 dialog.dismiss();
                                 Toast.makeText(getContext(), "Bạn đã bỏ qua gán điều xe.",  Toast.LENGTH_SHORT) .show();
                             }
