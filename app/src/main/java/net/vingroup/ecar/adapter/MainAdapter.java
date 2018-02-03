@@ -68,7 +68,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
     int CurrentAPICall = 0;
     String pushNote;
     ArrayAdapter spinnerAdapter;
-
+    String statusAccept ;
 
     public MainAdapter(Context context, int resource, ArrayList<EntityTicket> bookList,String listSiteMain) {
         super(context, resource, bookList);
@@ -118,14 +118,13 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
         if(bookingList.size() != 0 ) {
             bookingRoom.setText(bookingList.get(position).getPlace() );
+            Log.d("LastStatus","respond: " + bookingList.get(position).getStatusName().trim());
             if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
                 currentStatus = "Đang chờ xử lý";
-                CurrentAPICall = 1;
             }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
                 currentStatus = "Đã hoàn thành";
-                CurrentAPICall = 2;
             }else if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
                 bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
             }
@@ -187,15 +186,17 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                         bttStatus.setBackgroundResource(R.drawable.round_button_chuadieu);
                         CurrentAPICall = 1;
+                        statusAccept = "Đang chờ xử lý";
                     }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                         bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
                         CurrentAPICall = 2;
+                        statusAccept = "Đã hoàn thành";
                     }else if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
                         bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
                         CurrentAPICall = 3;
                     }
 
-                    Log.d("currentStatus","Status: " + bookingList.get(position).getStatusName() + " | "  + CurrentAPICall);
+                    Log.d("statusAccept","Status: " + bookingList.get(position).getStatusName() + " | "  + CurrentAPICall);
 
                     final AppCompatDialog dialog = new AppCompatDialog(getContext());
                     dialog.setContentView(R.layout.dialog);
@@ -211,14 +212,13 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
 
                     Log.d("DRIVER SELECTED", ": "  + driverCurrent);
 
+                    Log.d("StatusHERE","respond: " + bookingList.get(position).getStatusName());
                     if(bookingList.get(position).getStatusName().trim().equals("Mới tạo")){
                         bttSubmit.setText("Điều xe");
-                        currentStatus = "Đang chờ xử lý";
                         worldlist.clear();
                         Log.d("SiteIDTechNical","SiteID: " + listSite);
                     }else if(bookingList.get(position).getStatusName().trim().equals("Đang chờ xử lý")){
                         bttSubmit.setText("Hoàn Thành");
-                        currentStatus = "Đã hoàn thành";
                     }
                     final Button bttHuychuyen  = (Button) dialog.findViewById(R.id.btn_no);
 
@@ -251,9 +251,8 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                     spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view,int i, long l) {
-
-                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
-                                String text = spinnerDriver.getSelectedItem().toString();
+//                                String selectedItemText = (String) adapterView.getItemAtPosition(position);
+//                                String text = spinnerDriver.getSelectedItem().toString();
                                 driverCurrent = spinnerDriver.getSelectedItem().toString();
                                 driverCurrent = worldlist.get(i);
                                 Toast.makeText(getContext(), "Đã chọn: " +spinnerDriver.getSelectedItem().toString(),  Toast.LENGTH_SHORT) .show();
@@ -416,17 +415,15 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
         protected Void doInBackground(Void... arg0) {
             JSONObject jsonRequest = new JSONObject();
             String getticketurl = null;
-            if(driverCurrent == "-----------------------"){
-                getticketurl = Constant.APIURL + Constant.APIUPDATETICKET;
-            } else {
-                getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
-            }
-            Log.d("CurrentAPICall_SYNC","respond: " + CurrentAPICall);
 
+            getticketurl = Constant.APIURL + Constant.APIASSIGNDRIVER;
+
+            Log.d("CurrentAPICall_SYNC","respond: " + CurrentAPICall);
+            Log.d("statusAccept","respond: " + statusAccept);
             Log.e("DRIVERGET", "Response from url: " + getticketurl);
             try {
                 jsonRequest.put("WorkOrderId", workerID);
-                jsonRequest.put("StatusName",currentStatus );
+                jsonRequest.put("StatusName",statusAccept );
                 jsonRequest.put("Technician",driverCurrent);
                 String response = HttpClient.getInstance().post(getContext(),getticketurl, jsonRequest.toString());
                 Log.i("CHANGESTATUS", "POST : "+jsonRequest.toString());

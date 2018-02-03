@@ -13,7 +13,6 @@ public class Constant {
     public static String KEY_FIREBASE_CODE = "firebase_key";
 
     public static String APIURL = "https://simapi.vingroup.net/vincommerce";
-
     public static String APILOGIN   = "/ApiServiceCenter/CheckLogin";
     public static String APIGETTICKET = "/ApiServiceCenter/GetCarService";
     public static String APIGETDRIVER = "/ApiServiceCenter/GetTechnicianList";
