@@ -191,7 +191,7 @@ public class MainAdapter extends ArrayAdapter<EntityTicket>  {
                         bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
                         CurrentAPICall = 2;
                     }else if(bookingList.get(position).getStatusName().trim().equals("Đã hoàn thành")){
-                        bttStatus.setBackgroundResource(R.drawable.round_button_dangden);
+                        bttStatus.setBackgroundResource(R.drawable.round_button_dadon);
                         CurrentAPICall = 3;
                     }
 
